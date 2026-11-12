@@ -1,0 +1,6 @@
+logs/
+state/
+alerts/
+__pycache__/
+accounts.json
+*.sh

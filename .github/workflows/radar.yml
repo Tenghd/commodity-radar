@@ -1,0 +1,46 @@
+name: commodity-radar
+
+on:
+  schedule:
+    - cron: "7,17,27,37,47,57 * * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/radar.yml"
+
+env:
+  TZ: Asia/Shanghai
+
+permissions:
+  contents: write
+
+concurrency:
+  group: commodity-radar
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: deps
+        run: pip install --quiet requests
+      - name: scan
+        run: python radar.py --once
+      - name: publish
+        run: |
+          set -e
+          test -f alerts/dashboard.html
+          cp alerts/dashboard.html index.html
+          git config user.name "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit --amend --no-edit -m "dashboard auto-update [skip ci]"
+          git push --force origin HEAD:main
