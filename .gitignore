@@ -1,0 +1,11 @@
+logs/
+alerts/
+__pycache__/
+accounts.json
+*.sh
+state/*.tmp
+*.bak_rule
+
+*.bak_dir2
+state.bak_dir2/
+*.bak_preclean

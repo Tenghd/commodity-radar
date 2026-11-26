@@ -1,0 +1,561 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="60"><title>商品期货黑天鹅雷达</title><style>
+*{box-sizing:border-box}
+body{margin:0;background:#0d1017;color:#e8ecf2;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:14px;line-height:1.6}
+.wrap{width:100%;max-width:1180px;margin:0 auto;padding:22px 18px 40px}
+.head{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;border-bottom:1px solid #242c3a;padding-bottom:14px;margin-bottom:18px}
+h1{font-size:20px;font-weight:600;margin:0;letter-spacing:.5px}
+.tag{font-size:12px;padding:2px 9px;border-radius:11px;border:1px solid #2c3646;color:#8b97a9}
+.tag.ok{border-color:#2fa97a;color:#2fa97a}
+.tag.bad{border-color:#e5484d;color:#e5484d;background:#2a1416}
+.time{font-size:12px;color:#8b97a9;margin-left:auto}
+.kpis{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px}
+.kpi{flex:1 1 120px;background:#161b24;border:1px solid #242c3a;border-radius:9px;padding:12px 14px}
+.kpi .n{font-size:22px;font-weight:650;letter-spacing:.5px}
+.kpi .l{font-size:11px;color:#8b97a9;margin-top:2px}
+.kpi.crit .n{color:#e5484d}.kpi.warn .n{color:#f0a02a}.kpi.dim .n{color:#8b97a9}
+h2{font-size:15px;font-weight:600;margin:26px 0 12px;display:flex;align-items:center;gap:8px}
+h2::before{content:"";width:3px;height:14px;background:#3d7dff;border-radius:2px}
+.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+@media(max-width:900px){.flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.flow{grid-template-columns:1fr}}
+.step{flex:1 1 170px;background:#161b24;border:1px solid #242c3a;border-radius:9px;padding:12px 13px;position:relative}
+.step .t{font-size:12px;color:#6f7f96;letter-spacing:.5px;margin-bottom:5px}
+.step .b{font-size:13px;line-height:1.5}
+.step.acc{border-color:#2f4a78;background:#151d2b}
+.arrow{align-self:center;color:#3b4759;font-size:16px;padding:0 2px}
+.alert{background:#161b24;border:1px solid #242c3a;border-left:3px solid #e5484d;border-radius:9px;padding:13px 15px;margin-bottom:10px}
+.alert.L2{border-left-color:#f0a02a}
+.alert .top{display:flex;flex-wrap:wrap;gap:9px;align-items:baseline;margin-bottom:6px}
+.vname{font-size:15px;font-weight:650}
+.pill{font-size:12px;padding:1px 7px;border-radius:4px;background:#232a36;color:#a8b4c6}
+.pill.up{background:#3a1c1e;color:#f5625e}.pill.down{background:#152c26;color:#2fa97a}
+.meta{font-size:12px;color:#6f7f96}
+.txt{font-size:13.5px;color:#c4cedd}
+.tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+h2 .sub{font-size:11.5px;color:#7d8a9c;font-weight:400;margin-left:6px}
+.note{font-size:12px;line-height:1.6;color:#7b8798;margin:-4px 0 12px}
+.dirtag{display:inline-block;font-size:11.5px;padding:2px 7px;border-radius:5px;border:1px solid;font-weight:600;letter-spacing:.3px}
+.dirtag.bull{color:#ff7b7b;background:#2a1518;border-color:#5a2630}
+.dirtag.bear{color:#4ade80;background:#0f2417;border-color:#1f4a2f}
+.dirtag.neu{color:#8b98aa;background:#161b24;border-color:#2a3240}
+.dirtag.divtag{color:#ffb224;background:#2a2110;border-color:#5a451f;margin-left:4px}
+.dirtag.macrotag{color:#5aa9ff;background:#0f2136;border-color:#1f4a73;margin-left:4px}
+.tg.newtg{background:#2a1518;color:#ff6b6b;border-color:#5a2630}
+.tg{font-size:11.5px;color:#8b97a9;background:#1c222c;border:1px solid #2a3342;padding:2px 7px;border-radius:4px}
+.bars{margin-top:6px}
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.bar .nm{width:92px;font-size:13px;flex:0 0 92px}
+.bar .track{flex:1;height:9px;background:#1b212b;border-radius:5px;position:relative;overflow:hidden}
+.bar .fill{height:100%;border-radius:5px}
+.bar .val{width:66px;text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums;flex:0 0 66px}
+.grid{display:flex;flex-wrap:wrap;gap:6px}
+.cell{flex:0 0 calc(10% - 6px);min-width:74px;border-radius:7px;padding:7px 8px;border:1px solid #242c3a;background:#141922;cursor:pointer;transition:border-color .12s}
+.cell:hover{border-color:#3d7dff}
+.cell .c1{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cell .c2{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
+.sect{font-size:12px;color:#6f7f96;margin:14px 0 7px;letter-spacing:1px}
+.note{font-size:12px;color:#6f7f96;margin-top:6px}
+.empty{background:#141a22;border:1px dashed #2a3342;border-radius:9px;padding:18px;text-align:center;color:#7d8a9c}
+.foot{margin-top:30px;border-top:1px solid #242c3a;padding-top:12px;font-size:11.5px;color:#5f6c80}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 16px}
+#q{flex:1 1 240px;background:#141922;border:1px solid #2a3342;border-radius:7px;padding:9px 13px;color:#e8ecf2;font-size:14px;outline:none}
+#q:focus{border-color:#3d7dff}
+#hint{font-size:12px;color:#6f7f96}
+.kpi.clickable{cursor:pointer;transition:border-color .15s,transform .1s}
+.kpi.clickable:hover{border-color:#3d7dff;transform:translateY(-1px)}
+.nlink{color:#3d7dff;font-size:11px;margin-left:3px}
+.mask{display:none;position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(6,9,14,.74);z-index:9}
+.panel{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:860px;max-width:92vw;max-height:76vh;background:#121823;border:1px solid #2a3342;border-radius:11px;z-index:10;flex-direction:column;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.6)}
+.phead{display:flex;gap:10px;align-items:center;padding:13px 15px;border-bottom:1px solid #242c3a;flex-wrap:wrap}
+#ptitle{font-size:15px;font-weight:600;flex:1 1 auto}
+#pq{flex:0 1 190px;background:#0e1420;border:1px solid #2a3342;border-radius:6px;padding:7px 10px;color:#e8ecf2;font-size:13px;outline:none}
+#pq:focus{border-color:#3d7dff}
+#pclose{background:#1c2430;border:1px solid #2a3342;color:#8b97a9;width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:14px;line-height:1}
+#pclose:hover{color:#e8ecf2;border-color:#3d7dff}
+.pbody{overflow-y:auto;padding:2px 15px 18px}
+.pf{display:flex;gap:6px;align-items:center;padding:10px 0 2px;font-size:12px;color:#8b98aa;flex-wrap:wrap}
+.pbtn{background:#161b24;border:1px solid #2a3240;color:#b8c2cf;border-radius:6px;padding:5px 11px;font-size:12.5px;cursor:pointer;min-height:32px}
+.pbtn.on{background:#1d2a3f;border-color:#3d7dff;color:#e6edf7}
+.pitem{padding:10px 0;border-bottom:1px solid #1c2330}
+.pt{font-size:11.5px;color:#6f7f96;margin-bottom:3px}
+.px{font-size:13px;color:#c4cedd;line-height:1.6}
+.pempty{padding:26px;text-align:center;color:#7d8a9c}
+.sectwrap{margin-bottom:2px}
+@media (max-width:760px){
+  body{font-size:14.5px}
+  .wrap{padding:14px 12px 28px}
+  h1{font-size:17px}
+  .step .b{font-size:14px}
+  .step .t{font-size:12.5px}
+  .sect{font-size:13px}
+  .cell .c1{font-size:12.5px}
+  .cell .c2{font-size:13.5px}
+  .kpi .l{font-size:12px}
+  .pt{font-size:12px}
+  .px{font-size:13.5px}
+  #hint{font-size:12px}
+  #q,#pq{font-size:16px}
+  .head{gap:8px;padding-bottom:10px;margin-bottom:14px}
+  .time{margin-left:0;width:100%}
+  .kpi{flex:1 1 calc(50% - 5px);padding:10px 12px}
+  .kpi .n{font-size:19px}
+  .flow{grid-template-columns:1fr}
+  h2{font-size:14px;margin:20px 0 9px}
+  .alert{padding:11px 12px}
+  .vname{font-size:14px}
+  .txt{font-size:13px}
+  .bar .nm{width:66px;flex:0 0 66px;font-size:12.5px}
+  .bar .val{width:58px;flex:0 0 58px;font-size:12px}
+  .cell{flex:0 0 calc(25% - 6px)}
+  #q{flex:1 1 100%}
+  #hint{font-size:11.5px}
+  .panel{width:94vw;max-height:84vh}
+  .phead{padding:10px 12px}
+  #pq{flex:1 1 100%;order:3}
+  .pbody{padding:0 12px 14px}
+  .pitem{padding:9px 0}
+  .px{font-size:12.5px}
+}
+</style><style>html.authed #gate{display:none!important}html.authed #app{display:block!important}</style><script>(function(){try{var T='r4d4r-auth-v1';if(location.search.indexOf('k='+T)>=0){localStorage.setItem('radar_auth',T);document.documentElement.className='authed';}else if(localStorage.getItem('radar_auth')===T){document.documentElement.className='authed'}}catch(e){}})()</script></head><body><div id="gate" style="position:fixed;inset:0;z-index:9999;background:#0b0f16;display:flex;align-items:center;justify-content:center;padding:20px"><div style="width:330px;max-width:100%;background:#111823;border:1px solid #223047;border-radius:12px;padding:26px 24px"><div style="color:#e8eef7;font-size:18px;font-weight:600">商品期货黑天鹅雷达</div><div style="color:#7d8ea3;font-size:12px;margin:6px 0 18px">仅限授权账号访问</div><input id="gu" placeholder="账号" autocomplete="username" style="width:100%;box-sizing:border-box;background:#0b1119;border:1px solid #223047;color:#e8eef7;border-radius:8px;padding:10px 12px;font-size:14px;margin-bottom:10px;outline:none"><input id="gp" type="password" placeholder="密码" autocomplete="current-password" style="width:100%;box-sizing:border-box;background:#0b1119;border:1px solid #223047;color:#e8eef7;border-radius:8px;padding:10px 12px;font-size:14px;margin-bottom:14px;outline:none"><button id="gb" style="width:100%;background:#2f6fd0;color:#fff;border:0;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer">登录</button><div id="gerr" style="color:#ff5a5a;font-size:12px;height:18px;margin-top:8px"></div></div></div><div id="app" style="display:none"><div class="wrap">
+<div class="head">
+  <h1>商品期货黑天鹅雷达</h1>
+  <span class="tag ok">● 正常 · 无黑天鹅</span>
+  <span class="tag">覆盖 74 个品种</span>
+  <span class="time">最近扫描 2026-11-28 22:40:53</span>
+</div>
+
+<div class="toolbar">
+  <input id="q" type="search" placeholder="搜索品种：铁矿石 / 原油 / 苹果 / SC / AP …" autocomplete="off">
+  <span id="hint">加载中…</span>
+</div>
+
+<div class="kpis">
+  <div class="kpi clickable" data-panel="news"><div class="n">137</div><div class="l">本周期快讯<span class="nlink">›</span></div></div>
+  <div class="kpi crit clickable" data-panel="l1"><div class="n">0</div><div class="l">P0 突发<span class="nlink">›</span></div></div>
+  <div class="kpi warn clickable" data-panel="l2"><div class="n">0</div><div class="l">P1 重要<span class="nlink">›</span></div></div>
+  <div class="kpi clickable" data-panel="movers"><div class="n">3</div><div class="l">盘面异动 ≥4%<span class="nlink">›</span></div></div>
+  <div class="kpi dim clickable" data-panel="elapsed"><div class="n">25.7s</div><div class="l">扫描耗时<span class="nlink">›</span></div></div>
+</div>
+
+<h2>数据管线</h2>
+<div class="flow">
+  <div class="step"><div class="t">① 采集</div><div class="b">华尔街见闻（全球/商品）+ 新浪 7×24 + 金十数据<br><span style="color:#6f7f96">新浪期货行情（主）/ 东财（兜底）</span></div></div>
+  <div class="step"><div class="t">② 归一化</div><div class="b">统一时间口径、内容指纹去重<br><span style="color:#6f7f96">同一事件跨源只计一次</span></div></div>
+  <div class="step acc"><div class="t">③ 品种映射</div><div class="b">79 品种 × 别名 + 强产业链词<br><span style="color:#6f7f96">排除同名公司语境（果链≠苹果期货）</span></div></div>
+  <div class="step acc"><div class="t">④ 事件分级</div><div class="b">供应中断/制裁/灾害级 → L1<br>变量变化 → L2，常规进度 → L3</div></div>
+  <div class="step"><div class="t">⑤ 输出</div><div class="b">报告 + 本地看板 + webhook<br><span style="color:#6f7f96">叠加盘面异动二次确认</span></div></div>
+</div>
+<h2>黑天鹅告警</h2><div class="sub" style="margin:-6px 0 8px">近 48 小时 · P0 8 · P1 27｜本周期新增 0 条 · <a href="javascript:void(0)" id="hmore" style="color:#3d7dff;text-decoration:none">查 30 天历史 ›</a></div><div class="note">方向按事件性质规则推断（供应中断/灾害＝利多，复产/累库/需求走弱＝利空），强度看是否属停产断供级硬冲击。仅供参考，下单前请自行复核原文。</div><div class="alert" data-k="生猪 lhm 农产品 华储网发布2026年12月2日中央储备冻猪肉轮换收储竞价交易有关事项。">
+  <div class="top"><span class="vname">生猪 lhm</span><span class="pill up">+1.16%</span>
+    <span class="meta">11-28 09:40 · 新浪财经7x24 · P0 · 评分 9.0</span></div>
+  <div class="txt">华储网发布2026年12月2日中央储备冻猪肉轮换收储竞价交易有关事项。</div>
+  <div class="tags"><span class="dirtag bull" title="依据：收储">利多 · 中</span><span class="tg">强事件 收储</span><span class="tg">命中 猪肉</span></div>
+</div><div class="alert" data-k="燃油 fum 能化 【墨西哥下令加油站与收费站取消现金支付】墨西哥财政部周五在官方公报发布法令，要求加油站、收费站取消现金交易。财政部表示，作为从现金向数字支付逐步过渡举措的一部分，主管部门将在 15">
+  <div class="top"><span class="vname">燃油 fum</span><span class="pill up">+1.35%</span>
+    <span class="meta">11-28 02:30 · 新浪财经7x24 · P0 · 评分 9.0</span></div>
+  <div class="txt">【墨西哥下令加油站与收费站取消现金支付】墨西哥财政部周五在官方公报发布法令，要求加油站、收费站取消现金交易。财政部表示，作为从现金向数字支付逐步过渡举措的一部分，主管部门将在 15 日内出台细则。法令称，政府此举旨在打击非法燃油交易。</div>
+  <div class="tags"><span class="dirtag bull" title="依据：打击">利多 · 弱</span><span class="tg">强事件 打击</span><span class="tg">命中 燃油</span></div>
+</div><div class="alert" data-k="橡胶 rum 能化 乌克兰方面称袭击了俄罗斯叶夫列莫夫合成橡胶厂。">
+  <div class="top"><span class="vname">橡胶 rum</span><span class="pill up">+0.48%</span>
+    <span class="meta">11-27 22:50 · 新浪财经7x24 · P0 · 评分 9.0</span></div>
+  <div class="txt">乌克兰方面称袭击了俄罗斯叶夫列莫夫合成橡胶厂。</div>
+  <div class="tags"><span class="dirtag bull" title="依据：袭击">利多 · 弱</span><span class="tg">强事件 袭击</span><span class="tg">命中 橡胶</span></div>
+</div><div class="alert" data-k="强麦 WHM 农产品 【期货热点追踪】两艘装载超10万吨粮食的货轮在敖德萨附近突遭袭击，欧洲小麦应声冲高、乌克兰内陆粮价惨遭“腰斩”。全球小麦定价锚将如何重构？">
+  <div class="top"><span class="vname">强麦 WHM</span><span class="pill">无报价</span>
+    <span class="meta">11-27 21:20 · 金十数据 · P0 · 评分 11.0</span></div>
+  <div class="txt">【期货热点追踪】两艘装载超10万吨粮食的货轮在敖德萨附近突遭袭击，欧洲小麦应声冲高、乌克兰内陆粮价惨遭“腰斩”。全球小麦定价锚将如何重构？</div>
+  <div class="tags"><span class="dirtag bull" title="依据：袭击/遭袭">利多 · 弱</span><span class="tg">强事件 遭袭</span><span class="tg">命中 小麦</span></div>
+</div><div class="alert" data-k="燃油 fum 能化 【俄政府宣布：决定延长航空燃油出口禁令有效期】综合俄新社等媒体报道，俄罗斯政府11月27日在一份声明中宣布，俄方决定把禁止出口航空燃油的措施有效期延长至2027年3月31日。俄媒提">
+  <div class="top"><span class="vname">燃油 fum</span><span class="pill up">+1.66%</span>
+    <span class="meta">11-27 15:10 · 新浪财经7x24 · P0 · 评分 10.0</span></div>
+  <div class="txt">【俄政府宣布：决定延长航空燃油出口禁令有效期】综合俄新社等媒体报道，俄罗斯政府11月27日在一份声明中宣布，俄方决定把禁止出口航空燃油的措施有效期延长至2027年3月31日。俄媒提到，俄政府今年6月1日发布消息称，决定对航空燃油（包括在交易所交易购得的航空燃油）实施临时出口禁令。该禁令有效期持续至2026年11月30日。该禁令不适用于几种情况，其中包括根据政府间协议供应航空燃油、禁令生效前已报关的航空煤油批次等。报道称，俄罗斯政府11月27日在声明中称，一项关于禁止出口航空燃油（包括在交易所交易购得的航空燃油）的法令已签署，旨在维持国内燃料市场的稳定。该项措施将于2026年12月1日至2027</div>
+  <div class="tags"><span class="dirtag bull" title="依据：出口禁令/出口禁令/禁止出口">利多 · 强</span><span class="tg">强事件 出口禁令/禁止出口</span><span class="tg">命中 燃油</span></div>
+</div><div class="alert" data-k="燃油 fum 能化 据国际文传电讯社：俄罗斯将航空燃油出口禁令延长至明年3月31日。">
+  <div class="top"><span class="vname">燃油 fum</span><span class="pill up">+3.16%</span>
+    <span class="meta">11-27 14:10 · 金十数据 · P0 · 评分 10.5</span></div>
+  <div class="txt">据国际文传电讯社：俄罗斯将航空燃油出口禁令延长至明年3月31日。</div>
+  <div class="tags"><span class="dirtag bull" title="依据：出口禁令">利多 · 强</span><span class="tg">强事件 出口禁令</span><span class="tg">命中 燃油</span></div>
+</div><div class="alert" data-k="原油 scm 能化 【因柴油涨价，玻利维亚运输工会宣布下周一启动无限期全国罢工】金十数据11月27日讯，玻利维亚运输工会周四表示，将于下周一开始举行无限期全国性罢工，以抗议柴油价格上涨。运输工会表示，">
+  <div class="top"><span class="vname">原油 scm</span><span class="pill down">-0.08%</span>
+    <span class="meta">11-27 01:20 · 金十数据 · P0 · 评分 9.0</span></div>
+  <div class="txt">【因柴油涨价，玻利维亚运输工会宣布下周一启动无限期全国罢工】金十数据11月27日讯，玻利维亚运输工会周四表示，将于下周一开始举行无限期全国性罢工，以抗议柴油价格上涨。运输工会表示，柴油价格已从每升17.95玻利维亚诺上调至20.57玻利维亚诺（约合2.97美元）。工会认为，此举将大幅推高运营成本。此次柴油价格争议发生之际，玻利维亚今年已开始逐步削减柴油补贴。此前，该国持续面临燃料短缺问题，外汇储备也承受压力。</div>
+  <div class="tags"><span class="dirtag bull" title="依据：罢工/罢工">利多 · 强</span><span class="tg">强事件 罢工</span><span class="tg">变量 上调/补贴</span><span class="tg">命中 油价</span></div>
+</div><div class="alert" data-k="原油 scm 能化 战争造成的供应扰动让OPEC+考虑延长现行配额，以暂时维持产量安排。随着内部利益分歧加深，该联盟能否释放重新集体管理供应的信号，可能影响近期油价走势。点击查看">
+  <div class="top"><span class="vname">原油 scm</span><span class="pill down">-0.03%</span>
+    <span class="meta">11-26 22:41 · 金十数据 · P0 · 评分 11.0</span></div>
+  <div class="txt">战争造成的供应扰动让OPEC+考虑延长现行配额，以暂时维持产量安排。随着内部利益分歧加深，该联盟能否释放重新集体管理供应的信号，可能影响近期油价走势。点击查看</div>
+  <div class="tags"><span class="dirtag bull" title="依据：战争">利多 · 中</span><span class="tg">强事件 战争</span><span class="tg">变量 OPEC</span><span class="tg">命中 油价</span></div>
+</div><div class="alert L2" data-k="棕榈油 pm 农产品 【水利部：强化防范应对极端性水旱灾害】从水利部了解到，受超强厄尔尼诺影响，当前和今后一个时期，水旱灾害防御面临的气候条件将极为不利。目前，黄河上游内蒙古河段已出现首凌，预计12月上">
+  <div class="top"><span class="vname">棕榈油 pm</span><span class="pill down">-0.44%</span>
+    <span class="meta">11-28 21:10 · 新浪财经7x24 · P1 · 评分 9.0</span></div>
+  <div class="txt">【水利部：强化防范应对极端性水旱灾害】从水利部了解到，受超强厄尔尼诺影响，当前和今后一个时期，水旱灾害防御面临的气候条件将极为不利。目前，黄河上游内蒙古河段已出现首凌，预计12月上中旬出现首封，都较常年同期偏晚。气温波动变化更容易形成冰塞、冰坝，增加黄河凌汛风险。初步研判，长江流域、太湖流域、松花江流域也存在发生流域性洪水的风险，其他流域也会发生不同程度的洪水。水利部动态滚动研判，强化对极端性洪水、干旱、旱涝急转等的防范应对。</div>
+  <div class="tags"><span class="dirtag bull" title="依据：洪水/洪水/洪水">利多 · 强</span><span class="tg">强事件 洪水/干旱</span><span class="tg">命中 厄尔尼诺</span></div>
+</div><div class="alert L2" data-k="沪锡 snm 有色 【泰国将于下周一禁止向缅甸稀土矿出口化学品】金十数据11月28日讯，泰国计划于周一发布禁令，禁止出口用于缅甸稀土开采的化学品。此前，泰国北部河流中的砷含量超标，引发公众对健康风险的">
+  <div class="top"><span class="vname">沪锡 snm</span><span class="pill up">+5.10%</span>
+    <span class="meta">11-28 18:01 · 金十数据 · P1 · 评分 11.5</span></div>
+  <div class="txt">【泰国将于下周一禁止向缅甸稀土矿出口化学品】金十数据11月28日讯，泰国计划于周一发布禁令，禁止出口用于缅甸稀土开采的化学品。此前，泰国北部河流中的砷含量超标，引发公众对健康风险的担忧。泰国总理阿努廷周六在每周政府电视节目中宣布了这一出口禁令。此前，泰国已开始与缅甸展开谈判，要求缅方对此承担责任。在阿努廷发表上述言论的几天前，泰国与缅甸已同意共同检测受到砷污染的河流，并追查污染源头，将相关矿物追溯至开采矿场。</div>
+  <div class="tags"><span class="dirtag bull" title="依据：出口禁令/禁止出口/担忧">利多 · 强</span><span class="tg">强事件 禁止出口/出口禁令</span><span class="tg">命中 缅甸</span></div>
+</div><div class="alert L2" data-k="橡胶 rum 能化 【金十数据整理：俄乌冲突最新24小时局势跟踪（11月28日）】冲突情况：1. 俄罗斯国防部：在黑海击中了一艘载有军事货物的船只。2. 俄罗斯黑海港口城市新罗西斯克遭无人机袭击，造成">
+  <div class="top"><span class="vname">橡胶 rum</span><span class="pill up">+0.48%</span>
+    <span class="meta">11-28 09:00 · 金十数据 · P1 · 评分 10.0</span></div>
+  <div class="txt">【金十数据整理：俄乌冲突最新24小时局势跟踪（11月28日）】冲突情况：1. 俄罗斯国防部：在黑海击中了一艘载有军事货物的船只。2. 俄罗斯黑海港口城市新罗西斯克遭无人机袭击，造成三人受伤。3. 乌克兰军方：袭击了俄罗斯叶夫列莫夫合成橡胶厂；袭击了俄罗斯图拉州的导弹燃料设施。4. 俄罗斯圣彼得堡遭无人机袭击，一人受伤。其他情况：1. 俄罗斯考虑对来自“不友好国家”的海产品进口征收关税。2. 欧盟据悉拟筹集数百亿欧元强化防务能力，降低对美军事依赖。3. 俄罗斯副总理诺瓦克：尚未听说委内瑞拉和伊拉克计划退出欧佩克+协议。4. 俄外交部：若北约不改变政策、不停止对俄敌对行动，波罗的海地区的紧张局势就</div>
+  <div class="tags"><span class="dirtag neu">中性 · 中</span><span class="tg">强事件 袭击/导弹</span><span class="tg">变量 关税</span><span class="tg">命中 橡胶</span></div>
+</div><div class="alert L2" data-k="原油 scm 能化 黄仁勋复职也救不了AI行情？韩国政府紧急扩容救市基金。美通胀仍火热，特朗普再挥关税大棒！欧佩克+成员国争抢生产配额，胡塞扩大对沙特打击…本周你错过哪些刺激行情？">
+  <div class="top"><span class="vname">原油 scm</span><span class="pill down">-0.65%</span>
+    <span class="meta">11-27 21:40 · 金十数据 · P1 · 评分 9.5</span></div>
+  <div class="txt">黄仁勋复职也救不了AI行情？韩国政府紧急扩容救市基金。美通胀仍火热，特朗普再挥关税大棒！欧佩克+成员国争抢生产配额，胡塞扩大对沙特打击…本周你错过哪些刺激行情？</div>
+  <div class="tags"><span class="dirtag neu">中性 · 中</span><span class="tg">强事件 打击</span><span class="tg">变量 关税</span><span class="tg">命中 沙特</span></div>
+</div><div class="empty" id="emptyAlert" style="display:none">该品种近 48 小时没有告警。</div><h2 id="h2mover">盘面异动</h2><div class="bars"><div class="bar" data-k="铂 ptm +5.61">
+<span class="nm">铂</span>
+<div class="track"><div class="fill" style="width:70%;background:#e5484d"></div></div>
+<span class="val" style="color:#e5484d">+5.61%</span></div><div class="bar" data-k="钯 pdm +5.28">
+<span class="nm">钯</span>
+<div class="track"><div class="fill" style="width:66%;background:#e5484d"></div></div>
+<span class="val" style="color:#e5484d">+5.28%</span></div><div class="bar" data-k="沪锡 snm +5.10">
+<span class="nm">沪锡</span>
+<div class="track"><div class="fill" style="width:64%;background:#e5484d"></div></div>
+<span class="val" style="color:#e5484d">+5.10%</span></div></div><div class="note" data-k="铂 ptm">▪ 铂：本窗口无相关消息，注意资金行为或更早驱动</div><div class="note" data-k="钯 pdm">▪ 钯：本窗口无相关消息，注意资金行为或更早驱动</div><div class="note" data-k="沪锡 snm">▪ 沪锡：本窗口无相关消息，注意资金行为或更早驱动</div><h2 id="h2sector">全品种盘面</h2><div class="sectwrap"><div class="sect">黑色 · 14</div><div class="grid"><div class="cell" style="background:#5c2d2a" data-v="SAM" data-k="纯碱 SAM 黑色 郑商所">
+<div class="c1">纯碱</div><div class="c2">+1.68%</div></div><div class="cell" style="background:#5c2d2a" data-v="im" data-k="铁矿石 im 黑色 大商所">
+<div class="c1">铁矿石</div><div class="c2">+1.45%</div></div><div class="cell" style="background:#5c2d2a" data-v="sfm" data-k="硅铁 sfm 黑色 郑商所">
+<div class="c1">硅铁</div><div class="c2">+1.22%</div></div><div class="cell" style="background:#5c2d2a" data-v="smm" data-k="锰硅 smm 黑色 郑商所">
+<div class="c1">锰硅</div><div class="c2">+1.19%</div></div><div class="cell" style="background:#3a2f2e" data-v="hcm" data-k="热卷 hcm 黑色 上期所">
+<div class="c1">热卷</div><div class="c2">+0.95%</div></div><div class="cell" style="background:#3a2f2e" data-v="rbm" data-k="螺纹钢 rbm 黑色 上期所">
+<div class="c1">螺纹钢</div><div class="c2">+0.69%</div></div><div class="cell" style="background:#3a2f2e" data-v="FGM" data-k="玻璃 FGM 黑色 郑商所">
+<div class="c1">玻璃</div><div class="c2">+0.68%</div></div><div class="cell" style="background:#3a2f2e" data-v="jm" data-k="焦炭 jm 黑色 大商所">
+<div class="c1">焦炭</div><div class="c2">+0.65%</div></div><div class="cell" style="background:#3a2f2e" data-v="jmm" data-k="焦煤 jmm 黑色 大商所">
+<div class="c1">焦煤</div><div class="c2">+0.16%</div></div><div class="cell" style="background:#3a2f2e" data-v="lgm" data-k="原木 lgm 黑色 大商所">
+<div class="c1">原木</div><div class="c2">+0.06%</div></div><div class="cell" style="background:#3a2f2e" data-v="ssm" data-k="不锈钢 ssm 黑色 上期所">
+<div class="c1">不锈钢</div><div class="c2">+0.04%</div></div><div class="cell" style="background:#26382f" data-v="fbm" data-k="纤维板 fbm 黑色 大商所">
+<div class="c1">纤维板</div><div class="c2">+0.00%</div></div><div class="cell" style="background:#26382f" data-v="bbm" data-k="胶合板 bbm 黑色 大商所">
+<div class="c1">胶合板</div><div class="c2">-0.17%</div></div><div class="cell" style="background:#26382f" data-v="wrm" data-k="线材 wrm 黑色 上期所">
+<div class="c1">线材</div><div class="c2">-0.18%</div></div></div></div><div class="sectwrap"><div class="sect">有色 · 9</div><div class="grid"><div class="cell" style="background:#b3261e" data-v="snm" data-k="沪锡 snm 有色 上期所">
+<div class="c1">沪锡</div><div class="c2">+5.10%</div></div><div class="cell" style="background:#5c2d2a" data-v="aom" data-k="氧化铝 aom 有色 上期所">
+<div class="c1">氧化铝</div><div class="c2">+1.65%</div></div><div class="cell" style="background:#3a2f2e" data-v="cum" data-k="沪铜 cum 有色 上期所">
+<div class="c1">沪铜</div><div class="c2">+0.84%</div></div><div class="cell" style="background:#3a2f2e" data-v="bcm" data-k="国际铜 bcm 有色 上期能源">
+<div class="c1">国际铜</div><div class="c2">+0.41%</div></div><div class="cell" style="background:#3a2f2e" data-v="znm" data-k="沪锌 znm 有色 上期所">
+<div class="c1">沪锌</div><div class="c2">+0.06%</div></div><div class="cell" style="background:#3a2f2e" data-v="adm" data-k="铸造铝 adm 有色 上期所">
+<div class="c1">铸造铝</div><div class="c2">+0.05%</div></div><div class="cell" style="background:#26382f" data-v="nim" data-k="沪镍 nim 有色 上期所">
+<div class="c1">沪镍</div><div class="c2">-0.07%</div></div><div class="cell" style="background:#26382f" data-v="pbm" data-k="沪铅 pbm 有色 上期所">
+<div class="c1">沪铅</div><div class="c2">-0.45%</div></div><div class="cell" style="background:#26382f" data-v="alm" data-k="沪铝 alm 有色 上期所">
+<div class="c1">沪铝</div><div class="c2">-0.47%</div></div></div></div><div class="sectwrap"><div class="sect">贵金属 · 4</div><div class="grid"><div class="cell" style="background:#b3261e" data-v="ptm" data-k="铂 ptm 贵金属 广期所">
+<div class="c1">铂</div><div class="c2">+5.61%</div></div><div class="cell" style="background:#b3261e" data-v="pdm" data-k="钯 pdm 贵金属 广期所">
+<div class="c1">钯</div><div class="c2">+5.28%</div></div><div class="cell" style="background:#8c2b22" data-v="agm" data-k="沪银 agm 贵金属 上期所">
+<div class="c1">沪银</div><div class="c2">+3.74%</div></div><div class="cell" style="background:#3a2f2e" data-v="aum" data-k="沪金 aum 贵金属 上期所">
+<div class="c1">沪金</div><div class="c2">+0.80%</div></div></div></div><div class="sectwrap"><div class="sect">能化 · 24</div><div class="grid"><div class="cell" style="background:#8c2b22" data-v="SHM" data-k="烧碱 SHM 能化 郑商所">
+<div class="c1">烧碱</div><div class="c2">+3.84%</div></div><div class="cell" style="background:#5c2d2a" data-v="fum" data-k="燃油 fum 能化 上期所">
+<div class="c1">燃油</div><div class="c2">+1.35%</div></div><div class="cell" style="background:#5c2d2a" data-v="URM" data-k="尿素 URM 能化 郑商所">
+<div class="c1">尿素</div><div class="c2">+1.03%</div></div><div class="cell" style="background:#3a2f2e" data-v="lm" data-k="塑料 lm 能化 大商所">
+<div class="c1">塑料</div><div class="c2">+0.91%</div></div><div class="cell" style="background:#3a2f2e" data-v="spm" data-k="纸浆 spm 能化 上期所">
+<div class="c1">纸浆</div><div class="c2">+0.76%</div></div><div class="cell" style="background:#3a2f2e" data-v="MAM" data-k="甲醇 MAM 能化 郑商所">
+<div class="c1">甲醇</div><div class="c2">+0.60%</div></div><div class="cell" style="background:#3a2f2e" data-v="rum" data-k="橡胶 rum 能化 上期所">
+<div class="c1">橡胶</div><div class="c2">+0.48%</div></div><div class="cell" style="background:#3a2f2e" data-v="vm" data-k="PVC vm 能化 大商所">
+<div class="c1">PVC</div><div class="c2">+0.48%</div></div><div class="cell" style="background:#3a2f2e" data-v="brm" data-k="丁二烯胶 brm 能化 上期所">
+<div class="c1">丁二烯胶</div><div class="c2">+0.36%</div></div><div class="cell" style="background:#3a2f2e" data-v="opm" data-k="胶版纸 opm 能化 上期所">
+<div class="c1">胶版纸</div><div class="c2">+0.33%</div></div><div class="cell" style="background:#3a2f2e" data-v="nrm" data-k="20号胶 nrm 能化 上期能源">
+<div class="c1">20号胶</div><div class="c2">+0.06%</div></div><div class="cell" style="background:#26382f" data-v="PFM" data-k="短纤 PFM 能化 郑商所">
+<div class="c1">短纤</div><div class="c2">-0.30%</div></div><div class="cell" style="background:#26382f" data-v="ppm" data-k="聚丙烯 ppm 能化 大商所">
+<div class="c1">聚丙烯</div><div class="c2">-0.36%</div></div><div class="cell" style="background:#26382f" data-v="egm" data-k="乙二醇 egm 能化 大商所">
+<div class="c1">乙二醇</div><div class="c2">-0.47%</div></div><div class="cell" style="background:#26382f" data-v="PLM" data-k="丙烯 PLM 能化 郑商所">
+<div class="c1">丙烯</div><div class="c2">-0.59%</div></div><div class="cell" style="background:#26382f" data-v="TAM" data-k="PTA TAM 能化 郑商所">
+<div class="c1">PTA</div><div class="c2">-0.82%</div></div><div class="cell" style="background:#26382f" data-v="ebm" data-k="苯乙烯 ebm 能化 大商所">
+<div class="c1">苯乙烯</div><div class="c2">-0.83%</div></div><div class="cell" style="background:#26382f" data-v="PRM" data-k="瓶片 PRM 能化 郑商所">
+<div class="c1">瓶片</div><div class="c2">-0.84%</div></div><div class="cell" style="background:#1e4a37" data-v="PXM" data-k="对二甲苯 PXM 能化 郑商所">
+<div class="c1">对二甲苯</div><div class="c2">-1.03%</div></div><div class="cell" style="background:#1e4a37" data-v="bum" data-k="沥青 bum 能化 上期所">
+<div class="c1">沥青</div><div class="c2">-1.17%</div></div><div class="cell" style="background:#1e4a37" data-v="pgm" data-k="LPG pgm 能化 大商所">
+<div class="c1">LPG</div><div class="c2">-1.42%</div></div><div class="cell" style="background:#1e4a37" data-v="bzm" data-k="纯苯 bzm 能化 大商所">
+<div class="c1">纯苯</div><div class="c2">-1.99%</div></div><div class="cell" style="background:#1e4a37" data-v="lum" data-k="低硫燃油 lum 能化 上期能源">
+<div class="c1">低硫燃油</div><div class="c2">-2.07%</div></div><div class="cell" style="background:#1e4a37" data-v="scm" data-k="原油 scm 能化 上期能源">
+<div class="c1">原油</div><div class="c2">-2.22%</div></div></div></div><div class="sectwrap"><div class="sect">农产品 · 19</div><div class="grid"><div class="cell" style="background:#5c2d2a" data-v="PKM" data-k="花生 PKM 农产品 郑商所">
+<div class="c1">花生</div><div class="c2">+1.31%</div></div><div class="cell" style="background:#5c2d2a" data-v="bm" data-k="豆二 bm 农产品 大商所">
+<div class="c1">豆二</div><div class="c2">+1.29%</div></div><div class="cell" style="background:#5c2d2a" data-v="RMM" data-k="菜粕 RMM 农产品 郑商所">
+<div class="c1">菜粕</div><div class="c2">+1.27%</div></div><div class="cell" style="background:#5c2d2a" data-v="lhm" data-k="生猪 lhm 农产品 大商所">
+<div class="c1">生猪</div><div class="c2">+1.16%</div></div><div class="cell" style="background:#5c2d2a" data-v="mm" data-k="豆粕 mm 农产品 大商所">
+<div class="c1">豆粕</div><div class="c2">+1.14%</div></div><div class="cell" style="background:#5c2d2a" data-v="APM" data-k="苹果 APM 农产品 郑商所">
+<div class="c1">苹果</div><div class="c2">+1.10%</div></div><div class="cell" style="background:#3a2f2e" data-v="ym" data-k="豆油 ym 农产品 大商所">
+<div class="c1">豆油</div><div class="c2">+0.65%</div></div><div class="cell" style="background:#3a2f2e" data-v="CJM" data-k="红枣 CJM 农产品 郑商所">
+<div class="c1">红枣</div><div class="c2">+0.59%</div></div><div class="cell" style="background:#3a2f2e" data-v="jdm" data-k="鸡蛋 jdm 农产品 大商所">
+<div class="c1">鸡蛋</div><div class="c2">+0.50%</div></div><div class="cell" style="background:#3a2f2e" data-v="csm" data-k="淀粉 csm 农产品 大商所">
+<div class="c1">淀粉</div><div class="c2">+0.45%</div></div><div class="cell" style="background:#3a2f2e" data-v="CFM" data-k="棉花 CFM 农产品 郑商所">
+<div class="c1">棉花</div><div class="c2">+0.42%</div></div><div class="cell" style="background:#3a2f2e" data-v="SRM" data-k="白糖 SRM 农产品 郑商所">
+<div class="c1">白糖</div><div class="c2">+0.37%</div></div><div class="cell" style="background:#3a2f2e" data-v="OIM" data-k="菜油 OIM 农产品 郑商所">
+<div class="c1">菜油</div><div class="c2">+0.18%</div></div><div class="cell" style="background:#3a2f2e" data-v="rrm" data-k="粳米 rrm 农产品 大商所">
+<div class="c1">粳米</div><div class="c2">+0.06%</div></div><div class="cell" style="background:#3a2f2e" data-v="cm" data-k="玉米 cm 农产品 大商所">
+<div class="c1">玉米</div><div class="c2">+0.05%</div></div><div class="cell" style="background:#26382f" data-v="CYM" data-k="棉纱 CYM 农产品 郑商所">
+<div class="c1">棉纱</div><div class="c2">-0.14%</div></div><div class="cell" style="background:#26382f" data-v="am" data-k="豆一 am 农产品 大商所">
+<div class="c1">豆一</div><div class="c2">-0.32%</div></div><div class="cell" style="background:#26382f" data-v="pm" data-k="棕榈油 pm 农产品 大商所">
+<div class="c1">棕榈油</div><div class="c2">-0.44%</div></div><div class="cell" style="background:#1e4a37" data-v="RSM" data-k="菜籽 RSM 农产品 郑商所">
+<div class="c1">菜籽</div><div class="c2">-1.63%</div></div></div></div><div class="sectwrap"><div class="sect">新能源 · 3</div><div class="grid"><div class="cell" style="background:#5c2d2a" data-v="psm" data-k="多晶硅 psm 新能源 广期所">
+<div class="c1">多晶硅</div><div class="c2">+2.77%</div></div><div class="cell" style="background:#5c2d2a" data-v="lcm" data-k="碳酸锂 lcm 新能源 广期所">
+<div class="c1">碳酸锂</div><div class="c2">+1.32%</div></div><div class="cell" style="background:#5c2d2a" data-v="sim" data-k="工业硅 sim 新能源 广期所">
+<div class="c1">工业硅</div><div class="c2">+1.02%</div></div></div></div><div class="sectwrap"><div class="sect">航运 · 1</div><div class="grid"><div class="cell" style="background:#5c2d2a" data-v="ecm" data-k="欧线集运 ecm 航运 上期能源">
+<div class="c1">欧线集运</div><div class="c2">+1.52%</div></div></div></div><div class="foot">
+数据源：华尔街见闻 · 新浪财经 7×24 · 金十数据 · 新浪期货行情／东方财富兜底｜
+扫描窗口 65 分钟，告警留存 30 天可查，每 30 分钟自动刷新｜本页由 radar.py 生成，仅供信息参考，不构成投资建议。<br>
+<span style="color:#7d8a9c">自动刷新：<span id="cd">60</span> 秒后重新加载</span>
+<a href="javascript:location.reload()" style="color:#3d7dff;text-decoration:none;margin-left:10px">立即刷新</a>
+</div></div>
+
+<div class="mask" id="mask"></div>
+<div class="panel" id="panel">
+  <div class="phead">
+    <span id="ptitle"></span>
+    <input id="pq" type="search" placeholder="在列表中筛选…" autocomplete="off">
+    <button id="pclose" title="关闭">✕</button>
+  </div>
+  <div class="pbody" id="pbody"></div>
+</div><script id="raw" type="application/json">{"news": [{"time": "22:35", "source": "新浪财经7x24", "text": "【巴基斯坦总理与巴航天员天地通话并问候中国航天员】据巴基斯坦国家电视台报道，巴总理夏巴兹28日与在中国空间站执行神舟二十四号载人飞行任务的巴基斯坦航天员穆罕默德·齐尚·阿里进行了天地通话，祝贺他成为第一位绕地球轨道飞行的巴基斯坦航天员，并请他向中国航天员同伴们转达诚挚问候。（新华社）", "variety": ""}, {"time": "22:34", "source": "新浪财经7x24", "text": "俄罗斯国防部：袭击了基辅的变电站和基辅地区的火力发电站。", "variety": ""}, {"time": "22:32", "source": "新浪财经7x24", "text": "【伊朗陆军总司令：在伊朗提出的所有条件得到满足前，霍尔木兹海峡将保持关闭】伊朗陆军总司令阿米尔·哈塔米（Amir Hatami）表示：今天，伊朗伊斯兰共和国强大的海军，与其他精锐武装力量一道，正与全球强权展开较量；他们在霍尔木兹海峡和阿曼海域令敌方的软弱与绝望暴露无遗，并使对手在海上屡遭败绩。在伊朗人民的支持下，并在最高领袖哈梅内伊的领导与指挥下，霍尔木兹海峡将保持关闭，直至伊朗提出的条件得到满足。", "variety": "原油"}, {"time": "22:34", "source": "金十数据", "text": "巴林外交部：召回黎巴嫩大使，抗议贝鲁特举行的会议中包含虚假指控。", "variety": ""}, {"time": "22:34", "source": "金十数据", "text": "俄罗斯国防部：基辅变电站和基辅地区热电厂遭袭。", "variety": "燃油"}, {"time": "22:30", "source": "金十数据", "text": "【特朗普称风暴摧毁“垃圾岛”，借机要求加快高尔夫球场项目】金十数据11月28日讯，美国总统特朗普在社交平台发文称，近期风暴已严重破坏波托马克河沿岸被称为“垃圾岛”的区域，原本就已遭侵蚀的海堤发生坍塌，沿海堤修建的道路也受到严重破坏，潮汐淹没并摧毁了当地几乎所有设施。特朗普将此次风暴称为“天意”，并借此再次强调加高海堤的必要性。他表示，必须大幅抬高海堤，才能保护当地土地和树木免受洪水侵袭。特朗普还称，受风暴影响，该高尔夫球场目前已变得危险且无法使用，美国内政部已将其关闭。内政部正请求雷耶斯法官立即批准相关项目继续推进，不要再拖延。特朗普认为，法官最终会为项目建成后的成果感到自豪。此前，雷耶斯法官曾采取行动阻止该高尔夫球场项目建设。特朗普指责其出于政治原因阻挠项目，并称如果最终不得不就此案诉诸上诉法院，将是令人遗憾的事。", "variety": "沥青"}], "alerts": [{"level": "L3", "variety": "沥青", "code": "bum", "time": "22:30", "source": "金十数据", "text": "【特朗普称风暴摧毁“垃圾岛”，借机要求加快高尔夫球场项目】金十数据11月28日讯，美国总统特朗普在社交平台发文称，近期风暴已严重破坏波托马克河沿岸被称为“垃圾岛”的区域，原本就已遭侵蚀的海堤发生坍塌，沿海堤修建的道路也受到严重破坏，潮汐淹没并摧毁了当地几乎所有设施。特朗普将此次风暴称为“天意”，并借此再次强调加高海堤的必要性。他表示，必须大幅抬高海堤，才能保护当地土地和树木免受洪水侵袭。特朗普还称，受风暴影响，该高尔夫球场目前已变得危险且无法使用，美国内政部已将其关闭。内政部正请求雷耶斯法官立即批准相关项目继续推进，不要再拖延。特朗普认为，法官最终会为项目建成后的成果感到自豪。此前，雷耶斯法官", "score": 8.5, "chg": -1.17, "direction": "bull", "impact": "强", "dir_basis": ["坍塌", "洪水", "盘面背离"], "divergence": true, "hit_type": "driver", "hit_word": "道路", "critical": ["坍塌", "洪水"], "major": [], "macro_info": null, "macro_surprise": null}, {"level": "L3", "variety": "燃油", "code": "fum", "time": "22:34", "source": "金十数据", "text": "俄罗斯国防部：基辅变电站和基辅地区热电厂遭袭。", "score": 7.5, "chg": 1.35, "direction": "bull", "impact": "弱", "dir_basis": ["遭袭"], "divergence": false, "hit_type": "driver", "hit_word": "电厂", "critical": ["遭袭"], "major": [], "macro_info": null, "macro_surprise": null}], "movers": [{"name": "铂", "code": "ptm", "chg": 5.61, "price": 329.55}, {"name": "钯", "code": "pdm", "chg": 5.28, "price": 217.5}, {"name": "沪锡", "code": "snm", "chg": 5.1, "price": 311020.0}], "stats": {"news": 137, "sources": 4, "varieties": 74, "new_alerts": 2, "l1": 0, "l2": 0, "elapsed": 25.7, "errors": []}, "quotes": {"rbm": {"name": "螺纹钢", "chg": 0.69, "price": 3050.0, "sector": "黑色", "exchange": "上期所"}, "hcm": {"name": "热卷", "chg": 0.95, "price": 3199.0, "sector": "黑色", "exchange": "上期所"}, "im": {"name": "铁矿石", "chg": 1.45, "price": 665.0, "sector": "黑色", "exchange": "大商所"}, "jm": {"name": "焦炭", "chg": 0.65, "price": 2095.0, "sector": "黑色", "exchange": "大商所"}, "jmm": {"name": "焦煤", "chg": 0.16, "price": 1520.0, "sector": "黑色", "exchange": "大商所"}, "wrm": {"name": "线材", "chg": -0.18, "price": 3296.0, "sector": "黑色", "exchange": "上期所"}, "sfm": {"name": "硅铁", "chg": 1.22, "price": 5960.0, "sector": "黑色", "exchange": "郑商所"}, "smm": {"name": "锰硅", "chg": 1.19, "price": 5944.0, "sector": "黑色", "exchange": "郑商所"}, "ssm": {"name": "不锈钢", "chg": 0.04, "price": 13810.0, "sector": "黑色", "exchange": "上期所"}, "FGM": {"name": "玻璃", "chg": 0.68, "price": 888.0, "sector": "黑色", "exchange": "郑商所"}, "SAM": {"name": "纯碱", "chg": 1.68, "price": 971.0, "sector": "黑色", "exchange": "郑商所"}, "lgm": {"name": "原木", "chg": 0.06, "price": 805.0, "sector": "黑色", "exchange": "大商所"}, "fbm": {"name": "纤维板", "chg": 0.0, "price": 1212.0, "sector": "黑色", "exchange": "大商所"}, "bbm": {"name": "胶合板", "chg": -0.17, "price": 147.9, "sector": "黑色", "exchange": "大商所"}, "cum": {"name": "沪铜", "chg": 0.84, "price": 92590.0, "sector": "有色", "exchange": "上期所"}, "alm": {"name": "沪铝", "chg": -0.47, "price": 21205.0, "sector": "有色", "exchange": "上期所"}, "aom": {"name": "氧化铝", "chg": 1.65, "price": 2592.0, "sector": "有色", "exchange": "上期所"}, "adm": {"name": "铸造铝", "chg": 0.05, "price": 20910.0, "sector": "有色", "exchange": "上期所"}, "znm": {"name": "沪锌", "chg": 0.06, "price": 23915.0, "sector": "有色", "exchange": "上期所"}, "pbm": {"name": "沪铅", "chg": -0.45, "price": 15365.0, "sector": "有色", "exchange": "上期所"}, "nim": {"name": "沪镍", "chg": -0.07, "price": 119040.0, "sector": "有色", "exchange": "上期所"}, "snm": {"name": "沪锡", "chg": 5.1, "price": 311020.0, "sector": "有色", "exchange": "上期所"}, "bcm": {"name": "国际铜", "chg": 0.41, "price": 82580.0, "sector": "有色", "exchange": "上期能源"}, "ptm": {"name": "铂", "chg": 5.61, "price": 329.55, "sector": "贵金属", "exchange": "广期所"}, "pdm": {"name": "钯", "chg": 5.28, "price": 217.5, "sector": "贵金属", "exchange": "广期所"}, "sim": {"name": "工业硅", "chg": 1.02, "price": 8425.0, "sector": "新能源", "exchange": "广期所"}, "psm": {"name": "多晶硅", "chg": 2.77, "price": 32800.0, "sector": "新能源", "exchange": "广期所"}, "lcm": {"name": "碳酸锂", "chg": 1.32, "price": 84220.0, "sector": "新能源", "exchange": "广期所"}, "aum": {"name": "沪金", "chg": 0.8, "price": 781.36, "sector": "贵金属", "exchange": "上期所"}, "agm": {"name": "沪银", "chg": 3.74, "price": 10344.0, "sector": "贵金属", "exchange": "上期所"}, "scm": {"name": "原油", "chg": -2.22, "price": 584.6, "sector": "能化", "exchange": "上期能源"}, "fum": {"name": "燃油", "chg": 1.35, "price": 3988.0, "sector": "能化", "exchange": "上期所"}, "lum": {"name": "低硫燃油", "chg": -2.07, "price": 4486.0, "sector": "能化", "exchange": "上期能源"}, "bum": {"name": "沥青", "chg": -1.17, "price": 4305.0, "sector": "能化", "exchange": "上期所"}, "pgm": {"name": "LPG", "chg": -1.42, "price": 5345.0, "sector": "能化", "exchange": "大商所"}, "rum": {"name": "橡胶", "chg": 0.48, "price": 18880.0, "sector": "能化", "exchange": "上期所"}, "nrm": {"name": "20号胶", "chg": 0.06, "price": 15965.0, "sector": "能化", "exchange": "上期能源"}, "brm": {"name": "丁二烯胶", "chg": 0.36, "price": 15325.0, "sector": "能化", "exchange": "上期所"}, "spm": {"name": "纸浆", "chg": 0.76, "price": 4742.0, "sector": "能化", "exchange": "上期所"}, "opm": {"name": "胶版纸", "chg": 0.33, "price": 3626.0, "sector": "能化", "exchange": "上期所"}, "MAM": {"name": "甲醇", "chg": 0.6, "price": 3174.0, "sector": "能化", "exchange": "郑商所"}, "TAM": {"name": "PTA", "chg": -0.82, "price": 6076.0, "sector": "能化", "exchange": "郑商所"}, "PXM": {"name": "对二甲苯", "chg": -1.03, "price": 8262.0, "sector": "能化", "exchange": "郑商所"}, "egm": {"name": "乙二醇", "chg": -0.47, "price": 5263.0, "sector": "能化", "exchange": "大商所"}, "ebm": {"name": "苯乙烯", "chg": -0.83, "price": 8315.0, "sector": "能化", "exchange": "大商所"}, "bzm": {"name": "纯苯", "chg": -1.99, "price": 7130.0, "sector": "能化", "exchange": "大商所"}, "vm": {"name": "PVC", "chg": 0.48, "price": 5073.0, "sector": "能化", "exchange": "大商所"}, "ppm": {"name": "聚丙烯", "chg": -0.36, "price": 8781.0, "sector": "能化", "exchange": "大商所"}, "lm": {"name": "塑料", "chg": 0.91, "price": 8345.0, "sector": "能化", "exchange": "大商所"}, "SHM": {"name": "烧碱", "chg": 3.84, "price": 1622.0, "sector": "能化", "exchange": "郑商所"}, "URM": {"name": "尿素", "chg": 1.03, "price": 1767.0, "sector": "能化", "exchange": "郑商所"}, "PFM": {"name": "短纤", "chg": -0.3, "price": 7888.0, "sector": "能化", "exchange": "郑商所"}, "PRM": {"name": "瓶片", "chg": -0.84, "price": 7774.0, "sector": "能化", "exchange": "郑商所"}, "PLM": {"name": "丙烯", "chg": -0.59, "price": 8660.0, "sector": "能化", "exchange": "郑商所"}, "ecm": {"name": "欧线集运", "chg": 1.52, "price": 3276.0, "sector": "航运", "exchange": "上期能源"}, "am": {"name": "豆一", "chg": -0.32, "price": 5031.0, "sector": "农产品", "exchange": "大商所"}, "bm": {"name": "豆二", "chg": 1.29, "price": 3918.0, "sector": "农产品", "exchange": "大商所"}, "mm": {"name": "豆粕", "chg": 1.14, "price": 3195.0, "sector": "农产品", "exchange": "大商所"}, "ym": {"name": "豆油", "chg": 0.65, "price": 8366.0, "sector": "农产品", "exchange": "大商所"}, "pm": {"name": "棕榈油", "chg": -0.44, "price": 8901.0, "sector": "农产品", "exchange": "大商所"}, "cm": {"name": "玉米", "chg": 0.05, "price": 2168.0, "sector": "农产品", "exchange": "大商所"}, "csm": {"name": "淀粉", "chg": 0.45, "price": 2448.0, "sector": "农产品", "exchange": "大商所"}, "rrm": {"name": "粳米", "chg": 0.06, "price": 3595.0, "sector": "农产品", "exchange": "大商所"}, "jdm": {"name": "鸡蛋", "chg": 0.5, "price": 3188.0, "sector": "农产品", "exchange": "大商所"}, "lhm": {"name": "生猪", "chg": 1.16, "price": 9560.0, "sector": "农产品", "exchange": "大商所"}, "SRM": {"name": "白糖", "chg": 0.37, "price": 5224.0, "sector": "农产品", "exchange": "郑商所"}, "CFM": {"name": "棉花", "chg": 0.42, "price": 15590.0, "sector": "农产品", "exchange": "郑商所"}, "CYM": {"name": "棉纱", "chg": -0.14, "price": 20955.0, "sector": "农产品", "exchange": "郑商所"}, "RMM": {"name": "菜粕", "chg": 1.27, "price": 2306.0, "sector": "农产品", "exchange": "郑商所"}, "OIM": {"name": "菜油", "chg": 0.18, "price": 10088.0, "sector": "农产品", "exchange": "郑商所"}, "RSM": {"name": "菜籽", "chg": -1.63, "price": 5249.0, "sector": "农产品", "exchange": "郑商所"}, "APM": {"name": "苹果", "chg": 1.1, "price": 6272.0, "sector": "农产品", "exchange": "郑商所"}, "CJM": {"name": "红枣", "chg": 0.59, "price": 6015.0, "sector": "农产品", "exchange": "郑商所"}, "PKM": {"name": "花生", "chg": 1.31, "price": 7582.0, "sector": "农产品", "exchange": "郑商所"}}, "inv": {}, "fund": {"im": {"supply": "澳巴发运量、国产矿开工、非主流矿到港", "demand": "钢厂日均铁水产量、疏港量、高炉开工", "watch": "45 港港口库存（周）、钢厂厂内库存；港口累库+铁水下行=偏空"}, "rbm": {"supply": "电炉/高炉产量、钢厂利润、粗钢压减政策", "demand": "地产新开工、基建实物工作量、水泥/沥青开工", "watch": "厂库+社库双口径（周）；库存拐点与表需背离最有效"}, "hcm": {"supply": "热卷产量、钢厂检修", "demand": "制造业（机械、汽车、家电）需求、出口订单", "watch": "热卷社库（周）；卷螺差与库存分化"}, "jm": {"supply": "焦化利润、焦企开工率、环保限产", "demand": "钢厂高炉日耗、焦炭补库节奏", "watch": "焦化厂+港口+钢厂三方库存"}, "jmm": {"supply": "国内煤矿开工、蒙煤通关车数、澳煤进口", "demand": "焦企/钢厂炼焦煤库存可用天数", "watch": "煤矿端+口岸+下游库存；蒙煤通关骤降是强驱动"}, "ssm": {"supply": "镍铁/铬铁成本、钢厂排产", "demand": "地产、家电、出口", "watch": "无锡/佛山社会库存（周）"}, "FGM": {"supply": "产线冷修/点火、纯碱与燃料成本", "demand": "地产竣工、汽车玻璃、光伏组件", "watch": "沙河+华中厂库；库存天数与产销率"}, "SAM": {"supply": "氨碱/联碱开工、检修、天然碱投产", "demand": "浮法玻璃日熔、光伏玻璃、碳酸锂", "watch": "厂库+社会库存；重碱库存拐点"}, "cum": {"supply": "铜精矿 TC/RC、冶炼厂检修、废铜供应", "demand": "电网投资、地产、空调/新能源", "watch": "三大交易所库存（LME/SHFE/COMEX）+ 保税区"}, "alm": {"supply": "氧化铝价格、电解铝运行产能、云南水电", "demand": "建筑型材、光伏边框、汽车轻量化", "watch": "铝锭社会库存+铝棒库存（周）"}, "aom": {"supply": "铝土矿（几内亚）供应、氧化铝开工", "demand": "电解铝运行产能、非铝需求", "watch": "氧化铝港口库存+厂库"}, "znm": {"supply": "锌矿 TC、冶炼检修", "demand": "镀锌板、压铸合金、基建", "watch": "社会库存（周）"}, "nim": {"supply": "印尼镍矿配额/RKAB、菲律宾雨季", "demand": "不锈钢排产、三元前驱体", "watch": "LME+SHFE 库存、镍铁库存"}, "snm": {"supply": "缅甸佤邦复产、印尼出口", "demand": "焊料、光伏、电子", "watch": "SHFE+LME 库存；佤邦政策是最大变量"}, "aum": {"supply": "金矿产量、央行购金", "demand": "美联储降息路径、实际利率、避险与 ETF 持仓", "watch": "COMEX+SHFE 库存、ETF 持仓；看实际利率而非库存"}, "agm": {"supply": "白银矿副产、回收", "demand": "光伏银浆、电子、投资需求", "watch": "LBMA+COMEX 库存、金银比"}, "scm": {"supply": "OPEC+ 产量决议、美国页岩油、伊朗/委内瑞拉出口", "demand": "全球炼厂开工、中国进口、成品油裂解价差", "watch": "EIA 原油+库欣库存（周）、OECD 商业库存"}, "fum": {"supply": "俄罗斯/中东燃料油出口、炼厂开工", "demand": "船燃需求、发电需求", "watch": "新加坡燃料油库存（周）"}, "lum": {"supply": "低硫原油供应、炼厂低硫化", "demand": "船燃需求（航运）、脱硫塔安装率", "watch": "新加坡低硫燃料油库存"}, "bum": {"supply": "马瑞油供应、地方炼厂开工", "demand": "道路施工季节性、防水卷材", "watch": "厂库+社会库存；旺季去库速度"}, "pgm": {"supply": "中东/美国 LPG 出口、CP 价格", "demand": "化工深加工（PDH）、民用燃烧", "watch": "港口库存+炼厂库存；PDH 开工是关键"}, "rum": {"supply": "泰国/云南割胶、天气（拉尼娜）", "demand": "轮胎开工率、重卡销量", "watch": "青岛保税区+一般贸易库存（周）"}, "MAM": {"supply": "煤制甲醇开工、伊朗气头装置（限气）", "demand": "MTO 开工、甲醛/醋酸", "watch": "港口库存+西北厂库；伊朗装置停车是强驱动"}, "TAM": {"supply": "PX 供应、加工费、装置检修", "demand": "聚酯开工、织造订单", "watch": "PTA 社会库存+聚酯原料备货"}, "egm": {"supply": "乙烯/煤制乙二醇开工、进口", "demand": "聚酯开工", "watch": "港口库存（周）+ 装置检修"}, "ebm": {"supply": "纯苯供应、苯乙烯装置检修", "demand": "EPS/ABS/PS 需求、家电", "watch": "华东港口库存"}, "vm": {"supply": "电石价格、PVC 开工", "demand": "地产管材型材、出口", "watch": "华东/华南社会库存"}, "ppm": {"supply": "新增产能投放、丙烷/丙烯成本", "demand": "塑编、家电、汽车", "watch": "两油库存+贸易商库存"}, "SRM": {"supply": "巴西/印度/泰国产量、国内甘蔗糖分", "demand": "食糖消费、替代品（果葡糖浆）", "watch": "郑商所仓单+广西云南产销率；ICE 原糖联动"}, "CFM": {"supply": "新疆产量、种植面积、进口配额", "demand": "纺织服装出口、纱厂开机", "watch": "棉花商业库存（月）+ 仓单；内外棉价差"}, "mm": {"supply": "大豆到港量、油厂压榨开机", "demand": "生猪/禽类存栏、饲料需求", "watch": "油厂豆粕库存（周）+ 大豆港口库存；USDA 报告是核心"}, "RMM": {"supply": "菜籽进口（加拿大）、国产菜籽收购", "demand": "水产养殖旺季、饲料替代", "watch": "沿海菜粕库存+菜籽库存"}, "cm": {"supply": "新季玉米产量、进口配额", "demand": "深加工开工、饲料养殖", "watch": "北方四港库存+深加工库存"}, "lhm": {"supply": "能繁母猪存栏、出栏体重、二次育肥", "demand": "屠宰开工、冻品库存、消费季节性", "watch": "冻品库容率+能繁存栏；体重是先行指标"}, "jdm": {"supply": "在产蛋鸡存栏、补栏", "demand": "鸡蛋消费、替代品", "watch": "生产环节余货、流通环节库存"}, "pm": {"supply": "马来/印尼产量、MPOB 库存", "demand": "食用油消费、生柴需求（B40）", "watch": "MPOB 库存（月）+ 国内港口库存；印尼出口税是变量"}, "ym": {"supply": "大豆压榨、豆油产出", "demand": "餐饮消费、生柴掺混", "watch": "油厂豆油库存+港口豆油"}, "APM": {"supply": "新果产量、冷库入库量、天气（霜冻/冰雹）", "demand": "鲜果消费、替代水果价格", "watch": "冷库库存（周）是苹果最核心指标"}, "CJM": {"supply": "新疆红枣产量、天气", "demand": "节庆消费、加工需求", "watch": "社会库存+仓单；减产年份库存去化快"}, "PKM": {"supply": "花生产量、进口", "demand": "压榨需求、油厂开机", "watch": "油厂原料+成品库存"}, "sim": {"supply": "西南丰水期电价、硅厂开工", "demand": "多晶硅/有机硅/铝硅合金", "watch": "社会库存+仓单；丰枯水期是季节性主线"}, "lcm": {"supply": "盐湖/锂辉石产量、非洲矿到港", "demand": "新能源车/储能电池排产", "watch": "社会库存+仓单；矿端减产是强驱动"}}, "bas": {}, "hist": [{"ts": 1795501854.337454, "level": "L1", "variety": "原油", "code": "scm", "source": "金十数据", "text": "国际油价近期持续回落，市场押注供应过剩与外交降温。但美伊海上封锁与航运冲突不断升级，全面开战风险或被严重低估。", "score": 12.5, "chg": -2.66, "direction": "bear", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795504246.5217936, "level": "L2", "variety": "纯碱", "code": "SAM", "source": "金十数据", "text": "中国地震台网正式测定：11月28日02时26分在青海玉树州杂多县（北纬32.65度，东经93.89度）发生4.0级地震，震源深度10千米。", "score": 7.5, "chg": 1.06, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795505468.5114934, "level": "L2", "variety": "棕榈油", "code": "pm", "source": "金十数据", "text": "重要新闻1. 揽月着陆器首次飞行任务正有序推进。2. 2026年6G发展大会在上海开幕，发布《全球6G发展理念宣言》。3. 浙江：强化上市公司科技创新主体地位，鼓励上市公司布局建设重点实验室。4. 山东：到2030年初步建成清洁低碳安全高效的新型能源体系。个股新闻1. 主力资金流向数据显示，工业富联主力资金净流入25.68亿元居首位，中际旭创、东山精密、寒武纪、阳光电源获主力资金净流入居前；东方财富主力资金净流出6.6亿元居首位，长鑫科技、比亚迪、超声电子主力资金净流出居前。2. 一纸出口禁令引爆钴概念，腾远钴业涨超10%，公司回应。3. 中粮糖业：密切关注厄尔尼诺等气候异常对甘蔗种植及原料供", "score": 6.0, "chg": 0.75, "direction": "neutral", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795506646.5197196, "level": "L2", "variety": "红枣", "code": "CJM", "source": "金十数据", "text": "中国地震台网正式测定：11月27日02时36分在新疆阿克苏地区库车市发生3.8级地震，震源深度25千米。 ​​​", "score": 7.5, "chg": 0.67, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795513245.562476, "level": "L2", "variety": "碳酸锂", "code": "lcm", "source": "东财期货·异动补搜", "text": "【“离交战前线10公里”，中国男子在非洲做安全官，一个月收入5000美元，他先学拳击后学枪；有A股公司也招100名安保去海外】钴、铜、钽、铁、煤、石油、天然气，当然，还有黄金和工业钻石。 　　刚果（金）素有“世界原料仓库”之称。这个国家供应着全球约 70%的钴，铜产量居全球第二。 　　然而，资源在这里从来不只是一门生意。在刚果（金）历史上，争夺矿产多次成为战争的导火索。", "score": 7.5, "chg": -0.69, "direction": "neutral", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795522250.4963853, "level": "L2", "variety": "纸浆", "code": "spm", "source": "新浪财经7x24", "text": "【泽连斯基证实乌方在芬兰湾袭击俄货船】当地时间11月24日，乌克兰总统泽连斯基证实，乌方21日在芬兰湾袭击了俄罗斯一艘货船。泽连斯基称，“任何悬挂俄罗斯国旗的船只，任何在俄罗斯领海或中立水域载有武器或任何受制裁货物的（俄）船只，都是我们的合法打击目标”。泽连斯基还称，俄罗斯货船“斯巴达2号”载有武器，是乌军可以打击的目标。但他承认，此次袭击“可能令一些盟友感到不安”。（央视新闻）", "score": 8.5, "chg": 1.83, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795533050.8917835, "level": "L2", "variety": "沥青", "code": "bum", "source": "金十数据", "text": "炼厂遇袭没推高布油，海峡运量下降也没拦住它跌破90美元；照这个走势，供应风险似乎已经翻篇？市场现在相信的故事，需要什么来撑住，又可能被什么打断？下一段行情，就藏在这道分歧里！", "score": 9.0, "chg": 3.03, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795535448.8655634, "level": "L2", "variety": "豆粕", "code": "mm", "source": "新浪财经7x24", "text": "俄罗斯总统普京表示，尽管美国总统直接提出请求，乌克兰仍继续袭击俄罗斯炼油厂。", "score": 7.5, "chg": 0.22, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795554643.9925537, "level": "L2", "variety": "原油", "code": "scm", "source": "新浪财经7x24", "text": "【胡塞武装称沙特主导联军空袭萨那国际机场所在区域】也门胡塞武装24日夜间消息称，沙特主导的联军空袭了也门首都萨那国际机场所在区域。机场本身是否被炸尚不清晰。（央视新闻）", "score": 7.5, "chg": 2.25, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795557659.9527204, "level": "L2", "variety": "原油", "code": "scm", "source": "金十数据", "text": "据沙特媒体哈达斯（Alhadath）：也门荷台达市传出爆炸声。", "score": 7.5, "chg": 2.25, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795572651.6537228, "level": "L2", "variety": "原油", "code": "scm", "source": "金十数据", "text": "沙特领导的联军称其打击了荷台达港的作战能力目标。", "score": 7.5, "chg": 1.19, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795585256.4094765, "level": "L2", "variety": "沥青", "code": "bum", "source": "新浪财经7x24", "text": "【印尼亚齐特区多地遭遇洪灾 超1.4万人受灾】据印尼国家抗灾署25日消息，受持续强降雨影响，印尼亚齐特区亚齐辛吉尔县和南亚齐县近日发生洪灾，造成超1.4万人受灾。目前，部分地区洪水已逐渐消退，但仍有居民区房屋被淹，桥梁、道路及排水设施等公共基础设施受损。当地政府已组织转移安置受灾群众，暂无人员死亡报告。印尼国家抗灾署提醒受灾地区居民保持警惕，远离河岸等危险区域，必要时及时转移至安全地带。", "score": 8.0, "chg": 1.48, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795590652.9791648, "level": "L2", "variety": "乙二醇", "code": "egm", "source": "金十数据", "text": "也门胡塞武装称周二袭击了沙特阿拉伯的拉斯坦努拉炼油厂。", "score": 11.0, "chg": 2.86, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795594243.4726405, "level": "L2", "variety": "原油", "code": "scm", "source": "新浪财经7x24", "text": "【今日特朗普要闻】\n1、特朗普在考虑一系列对伊朗的选项，打击伊朗领导层长期以来一直是可选方案之一。\n2、特朗普称对伊朗战争行动的资金已保障至1月。\n3、特朗普搁置与俄罗斯的商业交易计划。\n4、特朗普考虑让委国重新开放经济。\n5、特朗普政府已暂停与厄瓜多尔的联合军事行动。\n6、特朗普称如果有必要会赦免黄仁勋，黄仁勋应当向国会说实话，并认为美国政府现在入股英伟达还不算太晚。\n7、特朗普称对中期选举的结果需要一个解释，在中期选举中损失了6亿美元，外界对结果不满。并认为过去两周汽油价格下降20%恰好发生在中期选举后非常奇怪。\n8、特朗普表示，将与密歇根州民主党当选参议员埃尔-赛义德会面，讨论“全民医保", "score": 10.0, "chg": 0.65, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795594846.501228, "level": "L2", "variety": "原油", "code": "scm", "source": "新浪财经7x24", "text": "【供应增加对冲霍尔木兹袭击升级风险，油价下跌】原油价格走低，供应增长信号盖过霍尔木兹海峡船舶袭击升级以及区域其他能源设施遇袭的影响。布伦特原油在前一交易日上涨2.3%后，跌破90美元/桶；西德克萨斯中质原油维持在80美元/桶附近。当地媒体报道，伊朗称自周二起已有六艘油轮在霍尔木兹海域触雷，近期已有多艘船只遭到伊朗方面针对。伊朗媒体报道，德黑兰方面还威胁，在诉求得到满足前将收紧对霍尔木兹海峡的管控，这意味着这场持续近九个月的冲突距离解决仍遥遥无期。尽管局势紧张，波斯湾原油出口近月大幅攀升，国际能源署预计全球市场本季度将转为供应过剩。", "score": 10.0, "chg": 0.65, "direction": "neutral", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795595467.3696966, "level": "L1", "variety": "玻璃", "code": "FGM", "source": "新浪财经7x24", "text": "【旗滨集团：公司拥有11条光伏玻璃生产线（日熔量13,000吨）】有投资者在互动平台向旗滨集团（601636.SH）提问，公司在建或者已建成的光伏玻璃窑炉产能有多少？后续计划如何安排？谢谢11月25日，公司回答表示，公司拥有11条光伏玻璃生产线（日熔量13,000吨），今年以来结合市场变化和各基地实际情况，对郴州、云南等地部分产线实施闷窑停产、冷修改造，公司积极配合行业产能自律调节，协同控产减产，优化供给水平，后续将结合市场供需和产线状况择机安排复产。", "score": 9.5, "chg": 0.69, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795598445.4110842, "level": "L2", "variety": "燃油", "code": "fum", "source": "新浪财经7x24", "text": "乌克兰DTEK公司表示，热电厂在遭袭后停止发电。", "score": 7.5, "chg": 0.25, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795599055.948028, "level": "L1", "variety": "白糖", "code": "SRM", "source": "金十数据", "text": "【受干旱天气影响，印度延长食糖免税进口期限】金十数据11月25日讯，由于“厄尔尼诺”现象引发的干旱天气导致产量下降，作为全球最大的食糖消费国，印度已将原糖免税进口的截止日期延长了三个月。根据印度商务部发布的一份通知，糖厂在2027年3月31日之前均可免税进口原糖。近几个月来，印度进口政策的频繁调整已成为影响食糖价格的重要因素。", "score": 9.5, "chg": 0.55, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795603249.6898715, "level": "L1", "variety": "鸡蛋", "code": "jdm", "source": "金十数据", "text": "1. 搁置以商业交易推动结束俄乌冲突的计划——据英国《金融时报》报道，在克里姆林宫对美国提出的能源和航空领域合作项目兴趣不大后，特朗普政府已悄然搁置将商业交易作为促使俄罗斯结束俄乌冲突的激励措施的相关提议。2. 对伊朗军事行动的经费可支撑到明年1月底——据纽约邮报报道，特朗普表示，对伊朗的军事行动已有足够资金维持至明年1月。他同时抨击威胁叫停这场冲突的国会民主党人，称此举将使一场“彻底的胜利”变成“失败”。3. 必要时愿赦免黄仁勋——据纽约邮报报道，特朗普表示，如有必要，他愿意赦免黄仁勋，但他认为，黄仁勋即使没有获得赦免也不会有事，并应在下周赴国会作证时“实话实说”。特朗普表示，英伟达的成功对", "score": 11.0, "chg": -0.47, "direction": "neutral", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795608657.606029, "level": "L1", "variety": "燃油", "code": "fum", "source": "金十数据", "text": "【金十数据整理：俄乌冲突最新24小时局势跟踪（11月26日）】1. 波兰要求北约击落乌克兰上空的俄罗斯导弹。2. 俄罗斯萨马拉地区瑟兹兰工业设施遭无人机袭击。3. 乌克兰军方：在萨瓦斯莱卡军用机场击中五架俄罗斯战机。4. 英媒：特朗普政府搁置以商业交易推动结束俄乌冲突的计划。5. 俄罗斯国防部称，防空系统一天内在俄罗斯各地区击落20架乌克兰无人机。6. 俄副外长：俄方愿继续举行俄美乌三方会谈。但截至目前，下一轮谈判的前景仍不明朗。7. 基辅市长：在杰斯尼扬斯基区，工业区范围内的一栋建筑遭到袭击。紧急救援部门正在赶往现场。8. 俄罗斯副总理诺瓦克：能源部已提议延长航空燃油出口禁令，该禁令原将于1", "score": 11.0, "chg": 0.25, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795609255.80655, "level": "L2", "variety": "沥青", "code": "bum", "source": "金十数据", "text": "【英国空军将战机移入机库，以“防范无人机威胁”】金十数据11月25日讯，据天空新闻了解，英国皇家空军（RAF）正采取措施，在夜间将战机转移至机库或加固掩体中，旨在保护它们免受潜在的无人机威胁。此外，对于那些仍处于露天状态的战机，军方据称还计划在其周围架设防无人机网。在乌克兰，这种防无人机网十分常见，被用于保护军事装备、国家关键基础设施及重要道路，抵御来自俄罗斯的无人机袭击。周二，英国军情五处（MI5）与国防部还向参与向乌克兰供应军事装备的英国企业发出警告，称它们面临俄罗斯实施破坏活动的风险有所增加。", "score": 7.5, "chg": 1.67, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795611051.4586482, "level": "L2", "variety": "原油", "code": "scm", "source": "新浪财经7x24", "text": "【中东袭击事件升级，原油小幅走高】随着中东袭击事件不断升级，该地区近几个月原油运输恢复前景蒙上阴影，油价小幅上行。布伦特原油交投于每桶92美元附近。沙特军方周三早些时候表示，拦截了四架飞向拉斯坦努拉的无人机，该地设有沙特大型炼油厂以及波斯湾出口设施。前一日，胡塞武装一周内第二次袭击该国主要金融区，攻防袭击循环持续。伊朗方面也加大了对霍尔木兹海峡过往船只的打击力度，已上报袭击数量持续增加。据当地媒体报道，伊朗称自周二以来，又有多艘油轮在该航道触雷，不过这些事件尚未得到独立核实。", "score": 10.0, "chg": 0.65, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795611672.73842, "level": "L2", "variety": "原油", "code": "scm", "source": "新浪财经7x24", "text": "【胡塞武装称沙特主导联军空袭也门荷台达港】 据也门胡塞武装当地时间25日下午消息，沙特主导的多国联军空袭了也门荷台达港。对于这一说法，沙特方面暂无回应。（央视）", "score": 7.5, "chg": 1.57, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795618875.2072065, "level": "L2", "variety": "原油", "code": "scm", "source": "新浪财经7x24", "text": "【海湾遇袭后，阿布扎比国家石油公司对油轮实施管控】装载原油及石油产品的油轮进入阿联酋部分主要油气出口枢纽附近水域将受到限制，这家波斯湾产油国正采取措施保护其基础设施，应对不断升级的地区冲突。一份管控通知显示，相关措施适用于阿布扎比国家石油公司（Adnoc）石油港务局管辖的海湾水域，包括鲁韦斯炼油综合体以及达斯岛等装货码头周边海域。油轮、液化气体船和化学品船禁止进入、停靠或穿越指定区域，除非停靠 Adnoc 石油港务局旗下港口码头，或开展获批业务。通知写明，救援、油污应急等提供紧急协助的船舶不在管控范围内。", "score": 10.5, "chg": 2.73, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795624254.2613063, "level": "L2", "variety": "尿素", "code": "URM", "source": "金十数据", "text": "挪威国家石油公司：预计停产将使2026年平均日产量减少1500万至2000万桶油当量。", "score": 7.5, "chg": 1.11, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795628446.5801, "level": "L1", "variety": "沪银", "code": "agm", "source": "金十数据", "text": "也门胡塞武装：在过去24小时内，沙特阿拉伯空军对首都萨那以及阿尔乔夫、塔伊兹、阿姆兰、哈杰、萨达、霍代达、达拉、伊布、拉赫和白银等省份进行了105次空袭和导弹攻击，目标是民用设施。这些攻击使用了从哈梅斯穆谢特和塔伊夫基地起飞的“F-15”和“台风”战斗机，以及来自纳杰兰的导弹袭击，造成了平民的伤亡。自从对我国的升级行动开始以来，沙特的空袭和导弹攻击总计已达到5825次。", "score": 13.0, "chg": -4.83, "direction": "neutral", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795638590.5454597, "level": "L2", "variety": "乙二醇", "code": "egm", "source": "新浪财经7x24", "text": "沙特领导的联军称，拦截并摧毁了也门胡塞武装向利雅得发射的两枚弹道导弹。", "score": 9.0, "chg": 3.69, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795641044.9722562, "level": "L2", "variety": "乙二醇", "code": "egm", "source": "新浪财经7x24", "text": "【沙特首都利雅得传出爆炸声】当地时间25日深夜，沙特首都利雅得传出爆炸声。稍早前，利雅得居民收到经由手机程序发布的防空警报。（央视新闻）", "score": 9.0, "chg": 3.69, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795648844.6074598, "level": "L2", "variety": "乙二醇", "code": "egm", "source": "金十数据", "text": "美国10月PCE加速且三季度GDP大幅上修，胡塞武装再度打击沙特，“大空头”原型自称暂时“空翻多”……昨日今晨，全球都发生了哪些大事？", "score": 11.0, "chg": 3.69, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795649453.0286543, "level": "L1", "variety": "沪银", "code": "agm", "source": "东财期货·异动补搜", "text": "【突发！两国首都传出爆炸声！美联储，重要发布！油价，大涨！金、银价格弱势难改？】张天骜表示，美联储货币政策重回紧缩周期，叠加美国新一轮关税政策即将出炉，国际贸易局势紧张，市场情绪持续走弱。 　　张天骜还表示，如果2027年中东冲突、俄乌冲突缓解，能源价格下跌将带动全球通胀下降，美联储的货币政策压力会有所缓解，金、银价格将有望回升。", "score": 10.5, "chg": -2.62, "direction": "neutral", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795650643.8588073, "level": "L2", "variety": "铁矿石", "code": "im", "source": "金十数据", "text": "1. 据Mysteel消息，青海乐都两家硅铁企业于25日下午相继停产，因电价偏高、现货价格倒挂，当前已有4台硅铁矿热炉逐步停炉降负荷，总减量约150吨/日，复产时间待定。2. 中储粮网11月25日油脂公司国产大豆购销双向竞价交易专场全部流拍。3. 据马来西亚棕榈油协会（MPOA）公布的数据，马来西亚11月1-20日棕榈油产量较上月同期减少8.09%。其中马来西亚半岛产量减少8.02%，东马来西亚产量减少8.19%，沙巴产量减少7.58%，沙捞越产量减少9.58%。4. 据隆众资讯，重庆万盛福耀玻璃有限公司一线设计产能600吨/日于25日复产点火（汽车玻璃）。5. 市场消息：消息人士称，哈萨克斯", "score": 5.5, "chg": -0.08, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795653645.836019, "level": "L2", "variety": "原油", "code": "scm", "source": "金十数据", "text": "胡塞武装宣称袭击沙特最大炼油厂拉斯塔努拉，消息人士证实设施遭袭，卫星图像显示上空升起浓烟。该厂毗邻全球最大原油出口码头之一。同日，沙特吉赞港也遭到袭击。点击查看", "score": 12.0, "chg": 2.01, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795654858.5506794, "level": "L1", "variety": "燃油", "code": "fum", "source": "东财期货·异动补搜", "text": "【东方财富期货早餐 11月26日 周四】（Mysteel） 　　能化期货 　　原油：俄罗斯副总理诺瓦克称，能源部已提议延长航空燃油出口禁令，该禁令原将于11月30日到期；政府将在12月考虑把汽油出口禁令延长至1月之后。 　　据报道，哈萨克斯坦对欧佩克+石油产能评估结果不满，希望获得更高配额数字。", "score": 13.5, "chg": 7.01, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795660259.1635697, "level": "L2", "variety": "沪金", "code": "aum", "source": "新浪财经7x24", "text": "申铉松：加息既是预防性措施，也是对可见的CPI上升的回应。", "score": 5.0, "chg": 0.31, "direction": "bear", "impact": "中", "divergence": false, "macro_info": "CPI 超预期"}, {"ts": 1795660259.1635697, "level": "L2", "variety": "沪银", "code": "agm", "source": "新浪财经7x24", "text": "申铉松：加息既是预防性措施，也是对可见的CPI上升的回应。", "score": 5.0, "chg": 0.14, "direction": "bear", "impact": "中", "divergence": false, "macro_info": "CPI 超预期"}, {"ts": 1795660845.7763174, "level": "L2", "variety": "原油", "code": "scm", "source": "金十数据", "text": "【期货盯盘神器专属文章】市场深谈：油价跌了，下一轮反弹的种子却已种下？海湾石油的克洛扎认为，市场未来40天将是通缩的，但霍尔木兹油流已被永远改变，成品油明年会有问题。点击阅读。", "score": 12.5, "chg": 2.53, "direction": "neutral", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795663247.5227005, "level": "L2", "variety": "原油", "code": "scm", "source": "东财期货·异动补搜", "text": "【沙特进出口数据刚飘红，支柱港口却接连遭袭】除吉赞港外，一架由胡塞武装发射的无人机在位于红海沿岸、沙特规模最大的吉达伊斯兰港附近被拦截并摧毁；沙特联军称在沙特东部的重要原油输出港拉斯塔努拉附近拦截到无人机。 　　胡塞武装昨日表示，他们袭击了沙特的吉赞港和吉达港，以报复沙特对其控制的也门港口发动的空袭。", "score": 11.5, "chg": 2.51, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795673455.8203976, "level": "L2", "variety": "燃油", "code": "fum", "source": "金十数据", "text": "能源1. 日本首次接收马来西亚生物液化天然气。2. 海湾袭击事件频发，阿联酋限制部分油轮进出。3. 也门胡塞武装称打击沙特炼油厂和首都金融区。4. 华侨银行新增一座黄金金库，以提升实物黄金业务能力。5. 因地缘冲突与季节需求，英国能源价格上限将上调26%。6. 沙特阿美与S-Oil启动韩国石化综合体项目，投资额达70亿美元。7. 消息人士称，哈萨克斯坦对欧佩克+石油产能评估结果不满，希望获得更高配额数字。8. 俄罗斯副总理诺瓦克：能源部已提议延长航空燃油出口禁令，该禁令原将于11月30日到期。政府将在12月考虑把汽油出口禁令延长至1月之后。9. 消息人士称，由于恶劣天气扰乱里海管道联盟（CPC", "score": 16.5, "chg": 7.23, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795673455.8203976, "level": "L2", "variety": "纸浆", "code": "spm", "source": "金十数据", "text": "【欧盟领导人将就七年期预算及乌克兰融资问题展开激烈交锋，力争12月达成协议】金十数据11月26日讯，欧盟外交官表示，欧盟领导人周四将围绕欧盟2028年至2034年近1.6万亿欧元（1.76万亿美元）的预算方案展开激烈交锋，希望缩小各方分歧，为12月达成协议创造条件。最新方案拟将欧盟2028年至2034年预算定为1.582万亿欧元，其中包括1400亿欧元疫情时期债务偿还资金。欧盟计划通过联合借款筹集450亿欧元，作为2027年对乌克兰贷款，并且只有在俄罗斯向乌克兰支付战争赔偿后才需要予以偿还。欧盟领导人希望在12月17日至18日举行的峰会上就预算协议达成一致。各国领导人希望在今年年底前敲定协议，", "score": 7.5, "chg": 0.17, "direction": "bear", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795676468.3182583, "level": "L2", "variety": "沪金", "code": "aum", "source": "金十数据", "text": "美元1. 纽约联储将澳新银行移出外汇交易对手名单。2. 美联储褐皮书：美国经济温和增长，消费支出基本持平。3. 美国10月核心PCE物价指数年率录得略高于预期的3.3%，第三季度GDP增速大幅上修至4.3%。4. 美国财政部：截至11月24日，美国政府距离41.1万亿美元的法定债务上限仅剩5111亿美元的借款空间。欧元1. 欧洲议会批准欧盟2027年年度预算。2. 麦肯锡：欧洲半数工业企业面临财务压力。3. 欧洲央行管委科赫尔：利率政策不能落后于形势。4. 知情人士：欧洲央行暂无意提高银行最低存款准备金率。5. 德国第三季度GDP增速下修至0.1% 资本投资大幅下降。日元1. 日本寿险巨头外汇", "score": 6.0, "chg": -0.17, "direction": "bear", "impact": "中", "divergence": false, "macro_info": "核心PCE 超预期（实际3.3%）"}, {"ts": 1795676468.3182583, "level": "L2", "variety": "沪银", "code": "agm", "source": "金十数据", "text": "美元1. 纽约联储将澳新银行移出外汇交易对手名单。2. 美联储褐皮书：美国经济温和增长，消费支出基本持平。3. 美国10月核心PCE物价指数年率录得略高于预期的3.3%，第三季度GDP增速大幅上修至4.3%。4. 美国财政部：截至11月24日，美国政府距离41.1万亿美元的法定债务上限仅剩5111亿美元的借款空间。欧元1. 欧洲议会批准欧盟2027年年度预算。2. 麦肯锡：欧洲半数工业企业面临财务压力。3. 欧洲央行管委科赫尔：利率政策不能落后于形势。4. 知情人士：欧洲央行暂无意提高银行最低存款准备金率。5. 德国第三季度GDP增速下修至0.1% 资本投资大幅下降。日元1. 日本寿险巨头外汇", "score": 6.0, "chg": -0.71, "direction": "bear", "impact": "中", "divergence": false, "macro_info": "核心PCE 超预期（实际3.3%）"}, {"ts": 1795676468.3182583, "level": "L2", "variety": "沪金", "code": "aum", "source": "新浪财经7x24", "text": "【金价大跌后震荡，交易员权衡美联储政策路径与AI行情风险】金价在近15个月低点上方震荡。尽管大盘情绪有所平复，但投资者仍担心美联储会加息来抑制通胀。黄金小幅走低，交投于3570美元附近。周三行情震荡，金价盘中触及2025年8月以来低点，收盘小幅回升。美国多数市场周四因感恩节休市，市场流动性或将收紧。澳新银行分析师索尼·库马里表示：“在昨日剧烈波动后金价有所修复，但市场情绪依旧偏空。FOMC会议前夕，加息预期正在推紧金融条件。”", "score": 5.0, "chg": -0.17, "direction": "bear", "impact": "中", "divergence": false, "macro_info": "FOMC 超预期"}, {"ts": 1795676468.3182583, "level": "L2", "variety": "沪银", "code": "agm", "source": "新浪财经7x24", "text": "【金价大跌后震荡，交易员权衡美联储政策路径与AI行情风险】金价在近15个月低点上方震荡。尽管大盘情绪有所平复，但投资者仍担心美联储会加息来抑制通胀。黄金小幅走低，交投于3570美元附近。周三行情震荡，金价盘中触及2025年8月以来低点，收盘小幅回升。美国多数市场周四因感恩节休市，市场流动性或将收紧。澳新银行分析师索尼·库马里表示：“在昨日剧烈波动后金价有所修复，但市场情绪依旧偏空。FOMC会议前夕，加息预期正在推紧金融条件。”", "score": 5.0, "chg": -0.71, "direction": "bear", "impact": "中", "divergence": false, "macro_info": "FOMC 超预期"}, {"ts": 1795680650.6353776, "level": "L2", "variety": "原油", "code": "scm", "source": "新浪财经7x24", "text": "【机构：霍尔木兹海峡袭击事件增多 但本月油轮通行量回升】船舶数据机构Vortexa的数据显示，尽管这条争议航道上针对船只的袭击有所增加，本月霍尔木兹海峡的油轮通行量仍出现上升。数据显示，截至11月19日，本月运载原油、成品油及液化天然气的船舶七日移动均值维持在26艘以上。而在10月，至少三分之二的天数里，过境船舶数量低于25艘。Vortexa数据同时显示，穿越海峡的超大型油轮与苏伊士型油轮数量小幅下降，小型船舶数量增加。不少成品油轮（体型小于原油轮）正被改造用于运油，推高了小型船通行数据。近几周，经由霍尔木兹海峡运输能源的风险上升。伊朗发起多轮油轮袭击，还将其禁止通行的船只范围扩大至拖轮。与此", "score": 11.5, "chg": 2.66, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795681862.53717, "level": "L2", "variety": "豆粕", "code": "mm", "source": "新浪财经7x24", "text": "据泰国媒体报道，首都曼谷一家炼油厂26日下午发生爆炸并引发火灾。目前尚无人员伤亡报告。（新华社）", "score": 8.5, "chg": 0.51, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795685454.142894, "level": "L2", "variety": "燃油", "code": "fum", "source": "新浪财经7x24", "text": "【西班牙伊维萨岛附近一油轮沉没 致1死6伤】总台记者获悉，当地时间11月26日凌晨，一艘悬挂马耳他国旗的燃油船在西班牙伊维萨岛附近海域沉没。船上共载有17名船员，其中1人死亡、6人受轻伤。事故发生后，7名船员被送往伊维萨岛接受救治，其余人员由附近救援船只接应。据悉，该船从西班牙南部港口城市阿尔赫西拉斯驶往巴塞罗那，载有约7000吨燃油。事故发生后，西班牙政府启动二级响应，以应对可能发生的燃油泄漏风险。海上救援机构已调派专业污染处置船前往事发海域，并安排飞机进行空中监测，评估沉船及燃油泄漏对海洋和沿岸生态环境可能造成的影响。（央视新闻）", "score": 13.0, "chg": 6.95, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795685454.142894, "level": "L2", "variety": "沪金", "code": "aum", "source": "新浪财经7x24", "text": "南非10月生产者价格指数同比上涨8.1%，此前预期上涨7.6%。", "score": 5.0, "chg": -0.17, "direction": "bear", "impact": "中", "divergence": false, "macro_info": "PPI 超预期（实际8.1%）"}, {"ts": 1795685454.142894, "level": "L2", "variety": "沪银", "code": "agm", "source": "新浪财经7x24", "text": "南非10月生产者价格指数同比上涨8.1%，此前预期上涨7.6%。", "score": 5.0, "chg": -0.71, "direction": "bear", "impact": "中", "divergence": false, "macro_info": "PPI 超预期（实际8.1%）"}, {"ts": 1795687848.0992658, "level": "L1", "variety": "尿素", "code": "URM", "source": "新浪财经7x24", "text": "俄罗斯斯塔夫罗波尔边疆区行政长官称，“涅温诺梅斯克氮肥厂”遭到无人机袭击。", "score": 9.0, "chg": 1.92, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795687848.0992658, "level": "L2", "variety": "原油", "code": "scm", "source": "新浪财经7x24", "text": "【伊朗称两艘油轮在霍尔木兹海峡发生爆炸】当地时间26日，伊朗伊斯兰革命卫队海军表示，当天早些时候，两艘违规航行油轮在海塞卜港以北海域触雷爆炸并起火。其中一艘为载有超过200万桶原油的超级油轮，目前该船仍在燃烧。(央视新闻)", "score": 11.5, "chg": 2.66, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795687848.0992658, "level": "L2", "variety": "原油", "code": "scm", "source": "金十数据", "text": "【中国驻吉达总领馆再次提醒中资机构和中国公民注意安全】金十数据11月26日讯，当地时间11月26日，中国驻吉达总领馆发布安全提醒。据沙特官方消息，25日，吉达相关港口设施遭到无人机空袭但被成功拦截。鉴于当前地区安全形势，中国驻吉达总领馆再次提醒领区中资机构和中国公民务必高度重视安全防范。", "score": 9.0, "chg": 2.66, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795688447.6276636, "level": "L2", "variety": "尿素", "code": "URM", "source": "金十数据", "text": "俄罗斯斯塔夫罗波尔边疆区州长：无人机袭击了“涅温诺梅斯克氮肥厂”（Nevinnomyssky Azot）。", "score": 9.0, "chg": 1.92, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795692671.0550082, "level": "L2", "variety": "豆粕", "code": "mm", "source": "新浪财经7x24", "text": "【泰国曼谷炼油厂火灾已致8人受伤】当地时间26日，泰国曼谷市市长查察证实，曼谷当天下午发生的炼油厂火灾造成8人受伤，其中5人伤势严重，3人为轻伤，伤者均为炼油厂员工。目前火势已得到控制，他呼吁该地区居民不要恐慌。（央视新闻）", "score": 7.5, "chg": 0.51, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795696261.4386709, "level": "L2", "variety": "橡胶", "code": "rum", "source": "新浪财经7x24", "text": "【埃及吉萨省车祸已致31死 一名嫌疑人被抓获】埃及检察机关26日发表声明说，已抓获一名涉嫌引发25日吉萨省环城公路车祸事故的嫌疑人。该事故造成31人死亡。声明说，据该嫌疑人供述，事发时他驾驶车辆沿环城公路行驶。他在行驶过程中不断变换车道并超越其他车辆，所驾驶车辆的左前部与一辆运载石油制品的卡车右后部发生碰撞，造成卡车的一个轮胎爆裂。卡车随后撞上混凝土护栏并发生侧翻，所载石油制品泄漏并最终引发火灾。（央视新闻）", "score": 8.5, "chg": 0.76, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795696849.917166, "level": "L2", "variety": "原油", "code": "scm", "source": "新浪财经7x24", "text": "【代表称OPEC+考虑维持当前原油产量配额】两名代表表示，OPEC+正考虑将当前原油产量配额延续至明年1月，目前该组织正应对伊朗战争影响等不确定因素。因谈论非公开信息，两名代表要求匿名。这个由沙特阿拉伯牵头的产油国联盟定于周日举行线上会议，讨论2027年的产量目标。OPEC+原计划把一项外部评估的结果纳入各成员国实际产能的确定依据，但伊拉克对其获得的评估结果提出异议，令这一进程变得更加复杂。石油输出国组织及其盟友召开此次会议之际，市场面临异常巨大的不确定性。该组织既要为伊朗战争可能结束的情形做好准备，也要应对联盟内部的紧张关系。阿联酋多年来对自身产量限制感到不满，于今年5月退出OPEC；伊拉克", "score": 11.0, "chg": 2.66, "direction": "neutral", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795697456.5581667, "level": "L2", "variety": "沪锌", "code": "znm", "source": "金十数据", "text": "【期货热点追踪】LME期锌大幅拉涨，在直接政策支持缺位与能源成本飙升的双重挤压下，全球大宗商品巨头托克旗下Nyrstar果断按下荷兰Budel锌冶炼厂停产键，基础金属供应链将迎何种冲击？", "score": 9.5, "chg": -0.06, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795700446.1880305, "level": "L2", "variety": "沪银", "code": "agm", "source": "东财期货·异动补搜", "text": "【机构重金抢筹8股（附名单）】天齐锂业：拟4亿至8亿元回购A股股份用于股权激励或员工持股计划。 　　华达科技：1—10月获得43个项目定点，预计生命周期总销售金额107.08亿元。 　　湖南白银：子公司宝山矿业计划停产检修约15天。 　　通富微电：董事长提议回购1.5亿至3亿元股份。", "score": 6.5, "chg": 3.18, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795704062.1639094, "level": "L1", "variety": "原油", "code": "scm", "source": "金十数据", "text": "战争造成的供应扰动让OPEC+考虑延长现行配额，以暂时维持产量安排。随着内部利益分歧加深，该联盟能否释放重新集体管理供应的信号，可能影响近期油价走势。点击查看", "score": 11.0, "chg": -0.03, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795704062.1639094, "level": "L2", "variety": "棕榈油", "code": "pm", "source": "新浪财经7x24", "text": "【厄尔尼诺相关降雨灾害已致厄瓜多尔28人死亡】当地时间11月25日凌晨，受持续强降雨影响，厄瓜多尔洛斯里奥斯省莫卡切地区发生山体滑坡。据悉，此次灾害已造成2人死亡、1人受伤，另有1名未成年人失踪。当地政府宣布进入紧急状态，并要求部分位于高风险区域的居民撤离。厄瓜多尔国家风险管理秘书处25日发布报告显示，自今年8月29日以来，与厄尔尼诺现象相关的降雨灾害已波及该国24个省，累计造成28人死亡、15人受伤，超12万人受到影响。（央视新闻）", "score": 8.0, "chg": 0.8, "direction": "neutral", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795705267.6706636, "level": "L2", "variety": "豆粕", "code": "mm", "source": "新浪财经7x24", "text": "消息人士称，委内瑞拉阿穆艾炼油厂因火灾疏散工人，无人员伤亡报告。", "score": 7.5, "chg": 0.74, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795713648.498588, "level": "L1", "variety": "原油", "code": "scm", "source": "金十数据", "text": "【因柴油涨价，玻利维亚运输工会宣布下周一启动无限期全国罢工】金十数据11月27日讯，玻利维亚运输工会周四表示，将于下周一开始举行无限期全国性罢工，以抗议柴油价格上涨。运输工会表示，柴油价格已从每升17.95玻利维亚诺上调至20.57玻利维亚诺（约合2.97美元）。工会认为，此举将大幅推高运营成本。此次柴油价格争议发生之际，玻利维亚今年已开始逐步削减柴油补贴。此前，该国持续面临燃料短缺问题，外汇储备也承受压力。", "score": 9.0, "chg": -0.08, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795716064.1461406, "level": "L2", "variety": "原油", "code": "scm", "source": "新浪财经7x24", "text": "沙特能源部：吉赞炼油厂遇袭致一名工人死亡。", "score": 7.5, "chg": -0.05, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795729843.5650797, "level": "L2", "variety": "原油", "code": "scm", "source": "金十数据", "text": "消息人士称，沙特阿拉伯南部多个地区传出数声爆炸。", "score": 7.5, "chg": 0.13, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795732843.7308846, "level": "L2", "variety": "棕榈油", "code": "pm", "source": "金十数据", "text": "【厄尔尼诺叠加高温 澳大利亚多地山火风险上升】金十数据11月27日讯，澳大利亚多个主要城市，包括墨尔本，未来几个月面临的丛林火灾风险预计将上升。受厄尔尼诺现象等因素影响，今年春季降雨充沛、夏季气温偏高，可能进一步加剧火灾风险。澳大利亚和新西兰消防与应急服务委员会（AFAC）周五发布的一份报告显示，维多利亚州东南部大片地区，包括巴拉瑞特、吉朗和本迪戈等城市，预计在12月至明年2月期间面临更高的丛林火灾风险。AFAC首席执行官Rob Webb表示，在预计将出现高于平均水平气温的夏季到来之前，当地已经积累了大量可燃物，包括“森林植被、草地和农作物”。太平洋地区强劲的厄尔尼诺天气系统带来了春季强降雨，", "score": 8.0, "chg": 0.89, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795737669.6499484, "level": "L2", "variety": "原油", "code": "scm", "source": "新浪财经7x24", "text": "【也门胡塞武装称沙特空袭致19死25伤】也门胡塞武装26日说，过去48小时内，也门多个省份遭沙特阿拉伯空袭，造成19人死亡、25人受伤，死伤者中包括妇女和儿童。（新华社）", "score": 7.5, "chg": 0.13, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795741258.8289118, "level": "L2", "variety": "丁二烯胶", "code": "brm", "source": "新浪财经7x24", "text": "【以军称打击黎巴嫩南部真主党武装火箭弹发射装置】以色列国防军26日晚发表声明称，以军当天对黎巴嫩南部黎真主党武装的火箭弹及发射装置发动打击。 以军说，此次打击目标是黎南部艾因·提纳地区真主党拉德万部队一处训练营地内的数十枚火箭弹及发射装置。真主党武装人员计划使用这些火箭弹袭击以色列，以军通过空中打击“消除威胁”。 以军还说，将继续采取行动“消除威胁”，同时将“继续恪守停火协议”。（新华社）", "score": 9.0, "chg": -0.79, "direction": "neutral", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795747245.524902, "level": "L2", "variety": "原油", "code": "scm", "source": "金十数据", "text": "黄金隔夜一度跌破3500美元，今日亚盘再度开启涨势；中东冲突仍在持续，沙特称吉赞炼油厂遭袭后部分作业暂停。当前现货金银多头占比持续高企，美油多空情绪不明，后市情绪如何？欢迎前往“数据库-嘉盛市场晴雨表”查看并订阅（数据每10分钟更新1次）", "score": 9.0, "chg": 1.18, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795759845.190457, "level": "L1", "variety": "燃油", "code": "fum", "source": "金十数据", "text": "据国际文传电讯社：俄罗斯将航空燃油出口禁令延长至明年3月31日。", "score": 10.5, "chg": 3.16, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795760443.9408004, "level": "L2", "variety": "沪银", "code": "agm", "source": "金十数据", "text": "能源1. 消息称美国曾劝说委内瑞拉和伊拉克退出欧佩克。2. 欧佩克+据悉将维持现有石油产量目标至2027年第一季度。3. 伊拉克石油部长：正与欧佩克谈判以提高伊拉克石油产量上限。4. 沙特吉赞炼油厂遭也门胡塞武装袭击，部分作业暂停。5. 伊拉克数千万桶原油装船延迟，亚洲买家转寻替代货源。6. 澳大利亚通过天然气保留法案，要求出口商最多预留20%供应国内。7. 因柴油涨价，玻利维亚运输工会宣布下周一启动无限期全国罢工。8. 消息人士称，印尼考虑在2027年上调补贴燃油价格以缓解财政压力，目前尚未决定是否上调或上调幅度。农业/矿业/贵金属1. 托克关闭荷兰Nyrstar锌冶炼业务。2. 欧盟上调玉", "score": 12.5, "chg": 12.12, "direction": "neutral", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795761055.199788, "level": "L2", "variety": "燃油", "code": "fum", "source": "新浪财经7x24", "text": "【新加坡副总理称正与美方磋商 以维持取得先进芯片的管道】新加坡副总理颜金勇表示，该国正与美方磋商，以维持取得先进半导体的管道；此前美国收紧了对这个东南亚国家的芯片出口限制。颜金勇周五在新加坡举行的活动上表示，新加坡正在检讨相关程序，以确保不会成为非法芯片贸易的场所。颜金勇说，目前尚未确认，政府正在与企业接洽。将继续与美国合作，研究如何协助本地企业继续安全取得高阶芯片。", "score": 5.0, "chg": 2.51, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795761649.4906907, "level": "L2", "variety": "低硫燃油", "code": "lum", "source": "新浪财经7x24", "text": "【新加坡副总理称正与美方磋商 以维持取得先进芯片的管道】新加坡副总理颜金勇表示，该国正与美方磋商，以维持取得先进半导体的管道；此前美国收紧了对这个东南亚国家的芯片出口限制。颜金勇周五在新加坡举行的活动上表示，新加坡正在检讨相关程序，以确保不会成为非法芯片贸易的场所。颜金勇说，目前尚未确认，政府正在与企业接洽。将继续与美国合作，研究如何协助本地企业继续安全取得高阶芯片。", "score": 5.0, "chg": 3.09, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795763449.7109747, "level": "L1", "variety": "燃油", "code": "fum", "source": "新浪财经7x24", "text": "【俄政府宣布：决定延长航空燃油出口禁令有效期】综合俄新社等媒体报道，俄罗斯政府11月27日在一份声明中宣布，俄方决定把禁止出口航空燃油的措施有效期延长至2027年3月31日。俄媒提到，俄政府今年6月1日发布消息称，决定对航空燃油（包括在交易所交易购得的航空燃油）实施临时出口禁令。该禁令有效期持续至2026年11月30日。该禁令不适用于几种情况，其中包括根据政府间协议供应航空燃油、禁令生效前已报关的航空煤油批次等。报道称，俄罗斯政府11月27日在声明中称，一项关于禁止出口航空燃油（包括在交易所交易购得的航空燃油）的法令已签署，旨在维持国内燃料市场的稳定。该项措施将于2026年12月1日至2027", "score": 10.0, "chg": 1.66, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795765841.8206522, "level": "L2", "variety": "沪金", "code": "aum", "source": "金十数据", "text": "【法国11月通胀超预期放缓 但仍高于欧洲央行目标】金十数据11月27日讯，随着燃料价格下跌，法国11月通胀降幅超出预期，但仍高于欧洲央行能够容忍的水平。预计欧洲央行下月将再次加息，这将是美伊战争爆发以来的第三次加息。法国国家统计局周五公布的数据显示，作为欧元区第二大经济体，法国11月调和CPI年率上涨3.2%，低于10月3.7%的通胀率，也低于市场预期的3.6%。而在美伊战争爆发之前，今年2月的通胀率仅为1.1%。美国中期选举结果提振了市场对冲突能够得到持久解决的希望，此后油价有所回落，汽油及其他燃料价格均有所下降。不过，欧洲天然气价格仍接近多年来的高点，这将使家庭能源价格在寒冷的冬季持续处于", "score": 6.5, "chg": 3.9, "direction": "bull", "impact": "中", "divergence": false, "macro_info": "CPI 低于预期（实际3.2%）"}, {"ts": 1795765841.8206522, "level": "L2", "variety": "沪银", "code": "agm", "source": "金十数据", "text": "【法国11月通胀超预期放缓 但仍高于欧洲央行目标】金十数据11月27日讯，随着燃料价格下跌，法国11月通胀降幅超出预期，但仍高于欧洲央行能够容忍的水平。预计欧洲央行下月将再次加息，这将是美伊战争爆发以来的第三次加息。法国国家统计局周五公布的数据显示，作为欧元区第二大经济体，法国11月调和CPI年率上涨3.2%，低于10月3.7%的通胀率，也低于市场预期的3.6%。而在美伊战争爆发之前，今年2月的通胀率仅为1.1%。美国中期选举结果提振了市场对冲突能够得到持久解决的希望，此后油价有所回落，汽油及其他燃料价格均有所下降。不过，欧洲天然气价格仍接近多年来的高点，这将使家庭能源价格在寒冷的冬季持续处于", "score": 6.5, "chg": 12.33, "direction": "bull", "impact": "中", "divergence": false, "macro_info": "CPI 低于预期（实际3.2%）"}, {"ts": 1795766462.7969182, "level": "L2", "variety": "沪金", "code": "aum", "source": "金十数据", "text": "西班牙11月调和CPI年率初值 4.1%，预期4.7%，前值4.90%。", "score": 8.0, "chg": 3.9, "direction": "bull", "impact": "中", "divergence": false, "macro_info": "CPI 低于预期（实际4.1% / 预期4.7%）"}, {"ts": 1795766462.7969182, "level": "L2", "variety": "沪银", "code": "agm", "source": "金十数据", "text": "西班牙11月调和CPI年率初值 4.1%，预期4.7%，前值4.90%。", "score": 8.0, "chg": 12.33, "direction": "bull", "impact": "中", "divergence": false, "macro_info": "CPI 低于预期（实际4.1% / 预期4.7%）"}, {"ts": 1795770064.269246, "level": "L2", "variety": "豆一", "code": "am", "source": "新浪财经7x24", "text": "【广弘控股：子公司种鸡场地块新增移交283.94亩】广弘控股公告称，公司下属控股子公司南海种禽公司就“种鸡场”地块收储事项，近日与佛山市土地储备中心、佛高控股签署两份《土地交接确认书》，本次移交种鸡场南部地块合计283.94亩，土地按现状交付，由佛高控股接管，已移交土地相关全部风险与责任由佛山市土地储备中心、佛高控股承担。该地块总收储面积约1136.87亩，收储及补偿总金额为9.52亿元，此前已移交北部地块520.98亩。", "score": 7.5, "chg": 0.42, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795770064.269246, "level": "L2", "variety": "沪金", "code": "aum", "source": "金十数据", "text": "【德国11月失业人数增幅超预期】金十数据11月27日讯，德国劳工部门周五公布的数据显示，11月德国失业人数经季节性调整后，增幅超出预期。该国失业人数增加了9000人，达到302.5万人，路透社预计为4000人。经季节性调整后的失业率保持在6.4%，与10月持平。在未经季节性调整的情况下，失业总人数减少了1.9万人，降至293.6万人，而10月为295.5万人。劳工部门表示，这一降幅反映出秋季季节性就业增长期的结束。自9月以来，未经季节性调整的失业总人数一直保持在300万人大关以下。德国联邦就业局区域管理委员会成员丹尼尔·特尔岑巴赫表示：“经济的温和复苏并未带动11月劳动力市场的回暖。”他指出，", "score": 6.5, "chg": 3.9, "direction": "bull", "impact": "中", "divergence": false, "macro_info": "失业率 超预期（实际6.4%）"}, {"ts": 1795770064.269246, "level": "L2", "variety": "沪银", "code": "agm", "source": "金十数据", "text": "【德国11月失业人数增幅超预期】金十数据11月27日讯，德国劳工部门周五公布的数据显示，11月德国失业人数经季节性调整后，增幅超出预期。该国失业人数增加了9000人，达到302.5万人，路透社预计为4000人。经季节性调整后的失业率保持在6.4%，与10月持平。在未经季节性调整的情况下，失业总人数减少了1.9万人，降至293.6万人，而10月为295.5万人。劳工部门表示，这一降幅反映出秋季季节性就业增长期的结束。自9月以来，未经季节性调整的失业总人数一直保持在300万人大关以下。德国联邦就业局区域管理委员会成员丹尼尔·特尔岑巴赫表示：“经济的温和复苏并未带动11月劳动力市场的回暖。”他指出，", "score": 6.5, "chg": 12.33, "direction": "bull", "impact": "中", "divergence": false, "macro_info": "失业率 超预期（实际6.4%）"}, {"ts": 1795771856.5621188, "level": "L2", "variety": "豆一", "code": "am", "source": "新浪财经7x24", "text": "【新钢股份：拟以8922.66万元收储公司及新钢金属土地资产】新钢股份公告，因城市发展需要，新余市人民政府拟收储公司及控股子公司新钢金属位于新余市高新区的部分土地使用权及地上建筑物等资产，土地面积合计28.71万平方米、房屋建筑面积共77232.51平方米，拟收储价格合计8922.66万元。公司及新钢金属已分别与新余市自然资源局储备中心签署收储意向协议，具体以最终收储协议为准；本次土地收储已经公司第十届董事会第二十一次会议审议通过，尚需提交股东会审议。", "score": 7.5, "chg": 0.42, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795777264.4389634, "level": "L2", "variety": "沪金", "code": "aum", "source": "新浪财经7x24", "text": "爱尔兰10月份零售销售额环比下降0.1%，同比增长3.9%。", "score": 6.5, "chg": 3.9, "direction": "bull", "impact": "中", "divergence": false, "macro_info": "零售 低于预期（实际0.1%）"}, {"ts": 1795780869.3478909, "level": "L2", "variety": "铁矿石", "code": "im", "source": "新浪财经7x24", "text": "【11月27日《新闻联播》主要内容】今天《新闻联播》主要内容有： 1.【新思想引领新征程】河湖安澜 碧水长流； 2.《习近平的文化情缘》在斯里兰卡主流媒体播出； 3.李强主持召开国务院常务会议； 4.李强将与全球主要国际经济组织负责人举行“1+10”对话会； 5.1—10月份规模以上工业企业利润同比增长16.0%； 6.我国工程机械行业持续稳中向好； 7.【赓续长征精神 奋进复兴征程】走好新的长征路 加快建设美丽新宁夏； 8.“三北”工程攻坚战将推行分区差异化治理； 9.我国自然资源确权登记加快立体发展； 10.高铁“上新”带动冬季文旅市场持续升温； 11.国内联播快讯： （1）五部门部署推进", "score": 6.0, "chg": -0.3, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795785653.906117, "level": "L1", "variety": "强麦", "code": "WHM", "source": "金十数据", "text": "【期货热点追踪】两艘装载超10万吨粮食的货轮在敖德萨附近突遭袭击，欧洲小麦应声冲高、乌克兰内陆粮价惨遭“腰斩”。全球小麦定价锚将如何重构？", "score": 11.0, "chg": null, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795786854.3899713, "level": "L2", "variety": "原油", "code": "scm", "source": "金十数据", "text": "黄仁勋复职也救不了AI行情？韩国政府紧急扩容救市基金。美通胀仍火热，特朗普再挥关税大棒！欧佩克+成员国争抢生产配额，胡塞扩大对沙特打击…本周你错过哪些刺激行情？", "score": 9.5, "chg": -0.65, "direction": "neutral", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795791047.8501267, "level": "L1", "variety": "橡胶", "code": "rum", "source": "新浪财经7x24", "text": "乌克兰方面称袭击了俄罗斯叶夫列莫夫合成橡胶厂。", "score": 9.0, "chg": 0.48, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795804248.9642181, "level": "L1", "variety": "燃油", "code": "fum", "source": "新浪财经7x24", "text": "【墨西哥下令加油站与收费站取消现金支付】墨西哥财政部周五在官方公报发布法令，要求加油站、收费站取消现金交易。财政部表示，作为从现金向数字支付逐步过渡举措的一部分，主管部门将在 15 日内出台细则。法令称，政府此举旨在打击非法燃油交易。", "score": 9.0, "chg": 1.35, "direction": "bull", "impact": "弱", "divergence": false, "macro_info": null}, {"ts": 1795827657.5444744, "level": "L2", "variety": "橡胶", "code": "rum", "source": "金十数据", "text": "【金十数据整理：俄乌冲突最新24小时局势跟踪（11月28日）】冲突情况：1. 俄罗斯国防部：在黑海击中了一艘载有军事货物的船只。2. 俄罗斯黑海港口城市新罗西斯克遭无人机袭击，造成三人受伤。3. 乌克兰军方：袭击了俄罗斯叶夫列莫夫合成橡胶厂；袭击了俄罗斯图拉州的导弹燃料设施。4. 俄罗斯圣彼得堡遭无人机袭击，一人受伤。其他情况：1. 俄罗斯考虑对来自“不友好国家”的海产品进口征收关税。2. 欧盟据悉拟筹集数百亿欧元强化防务能力，降低对美军事依赖。3. 俄罗斯副总理诺瓦克：尚未听说委内瑞拉和伊拉克计划退出欧佩克+协议。4. 俄外交部：若北约不改变政策、不停止对俄敌对行动，波罗的海地区的紧张局势就", "score": 10.0, "chg": 0.48, "direction": "neutral", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795830043.9177103, "level": "L1", "variety": "生猪", "code": "lhm", "source": "新浪财经7x24", "text": "华储网发布2026年12月2日中央储备冻猪肉轮换收储竞价交易有关事项。", "score": 9.0, "chg": 1.16, "direction": "bull", "impact": "中", "divergence": false, "macro_info": null}, {"ts": 1795860066.3646836, "level": "L2", "variety": "沪锡", "code": "snm", "source": "金十数据", "text": "【泰国将于下周一禁止向缅甸稀土矿出口化学品】金十数据11月28日讯，泰国计划于周一发布禁令，禁止出口用于缅甸稀土开采的化学品。此前，泰国北部河流中的砷含量超标，引发公众对健康风险的担忧。泰国总理阿努廷周六在每周政府电视节目中宣布了这一出口禁令。此前，泰国已开始与缅甸展开谈判，要求缅方对此承担责任。在阿努廷发表上述言论的几天前，泰国与缅甸已同意共同检测受到砷污染的河流，并追查污染源头，将相关矿物追溯至开采矿场。", "score": 11.5, "chg": 5.1, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}, {"ts": 1795871447.209109, "level": "L2", "variety": "棕榈油", "code": "pm", "source": "新浪财经7x24", "text": "【水利部：强化防范应对极端性水旱灾害】从水利部了解到，受超强厄尔尼诺影响，当前和今后一个时期，水旱灾害防御面临的气候条件将极为不利。目前，黄河上游内蒙古河段已出现首凌，预计12月上中旬出现首封，都较常年同期偏晚。气温波动变化更容易形成冰塞、冰坝，增加黄河凌汛风险。初步研判，长江流域、太湖流域、松花江流域也存在发生流域性洪水的风险，其他流域也会发生不同程度的洪水。水利部动态滚动研判，强化对极端性洪水、干旱、旱涝急转等的防范应对。", "score": 9.0, "chg": -0.44, "direction": "bull", "impact": "强", "divergence": false, "macro_info": null}]}</script><script>
+(function(){
+  var raw=document.getElementById("raw");
+  if(!raw){return;}
+  var D;
+  try{D=JSON.parse(raw.textContent);}catch(e){return;}
+  var q=document.getElementById("q"), hint=document.getElementById("hint");
+  if(!q||!hint){return;}
+  function low(s){return (s||"").toLowerCase();}
+
+  function apply(){
+    var k=low(q.value.trim()), visA=0, visC=0;
+    var items=document.querySelectorAll("[data-k]");
+    for(var i=0;i<items.length;i++){
+      var el=items[i];
+      var hit=(!k||low(el.getAttribute("data-k")).indexOf(k)>=0);
+      el.style.display=hit?"":"none";
+      if(hit){ if(el.className.indexOf("alert")>=0){visA++;} else {visC++;} }
+    }
+    var sw=document.querySelectorAll(".sectwrap"), anySect=false;
+    for(var j=0;j<sw.length;j++){
+      var g=sw[j].querySelector(".grid"), any=false;
+      for(var c=0;c<g.children.length;c++){if(g.children[c].style.display!=="none"){any=true;break;}}
+      sw[j].style.display=any?"":"none";
+      if(any){anySect=true;}
+    }
+    var h2s=document.getElementById("h2sector");
+    if(h2s){h2s.style.display=anySect?"":"none";}
+    var h2m=document.getElementById("h2mover"), anyBar=false;
+    var bars=document.querySelectorAll(".bar");
+    for(var b=0;b<bars.length;b++){if(bars[b].style.display!=="none"){anyBar=true;break;}}
+    if(h2m){h2m.style.display=anyBar?"":"none";}
+    var alerts=[].slice.call(document.querySelectorAll(".alert[data-k]"));
+    var vis=alerts.filter(function(x){return x.style.display!=="none";}).length;
+    var empty=document.getElementById("emptyAlert");
+    if(empty){empty.style.display=(k&&vis===0)?"block":"none";}
+    hint.textContent=k
+      ? ("命中 "+visA+" 条告警 · "+visC+" 个盘面项")
+      : ("共 "+visC+" 个盘面项 + "+visA+" 条告警，输入品种名即可筛选");
+  }
+  q.addEventListener("input",apply);
+  apply();
+
+  var mask=document.getElementById("mask"),
+      panel=document.getElementById("panel"),
+      ptitle=document.getElementById("ptitle"),
+      pbody=document.getElementById("pbody"),
+      pq=document.getElementById("pq");
+  if(!mask||!panel||!ptitle||!pbody||!pq){return;}
+
+  function esc(s){
+    return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+  function item(meta,txt,k){
+    return '<div class="pitem" data-k="'+esc(k)+'"><div class="pt">'+esc(meta)+
+           '</div><div class="px">'+esc(txt)+'</div></div>';
+  }
+
+  function build(kind){
+    var h="",i,x,n=0;
+    if(kind==="news"){
+      for(i=0;i<D.news.length;i++){x=D.news[i];
+        h+=item(x.time+" · "+x.source,(x.variety?"【"+x.variety+"】":"")+x.text,
+                (x.variety||"")+" "+x.text);n++;}
+    }else if(kind==="l1"||kind==="l2"){
+      var lv=kind==="l1"?"L1":"L2";
+      for(i=0;i<D.alerts.length;i++){x=D.alerts[i];
+        if(x.level!==lv){continue;}
+        h+=item(x.time+" · "+x.source+" · 评分 "+x.score+" · "+(x.chg==null?"无报价":(x.chg>0?"+":"")+x.chg.toFixed(2)+"%"),
+                x.variety+"("+x.code+")：" + x.text,
+                x.variety+" "+x.code+" "+x.text);n++;}
+      if(!n){h='<div class="pempty">本周期没有该级别告警。</div>';}
+    }else if(kind==="movers"){
+      for(i=0;i<D.movers.length;i++){x=D.movers[i];
+        h+=item((x.chg>0?"+":"")+x.chg.toFixed(2)+"% · 最新价 "+x.price,x.name+"（"+x.code+"）",
+                x.name+" "+x.code);n++;}
+      if(!n){h='<div class="pempty">本周期没有涨跌幅超过 4% 的品种。</div>';}
+    }else if(kind==="elapsed"){
+      h='<div class="pitem"><div class="px">本次扫描耗时 '+D.stats.elapsed+
+        ' 秒：采集行情 '+D.stats.varieties+' 个合约、快讯 '+D.stats.news+
+        ' 条，经指纹去重、品种映射、事件分级后输出 '+D.alerts.length+
+        ' 条告警（P0 '+D.stats.l1+' / P1 '+D.stats.l2+'）。<br><br>'+
+        '服务每 30 分钟自动扫描一次，本页每 60 秒自动重新加载。</div></div>';n=1;
+    }
+    return h;
+  }
+
+  var HF={lv:"all",range:720};
+  function histRows(){
+    var now=Date.now()/1000,out=[],i,x;
+    for(i=0;i<D.hist.length;i++){
+      x=D.hist[i];
+      if(HF.lv!=="all"&&x.level!==HF.lv){continue;}
+      if(now-(x.ts||0)>HF.range*3600){continue;}
+      out.push(x);
+    }
+    out.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+    return out;
+  }
+  function fmtTs(ts){
+    var d=new Date(ts*1000),p=function(v){return (v<10?"0":"")+v;};
+    return p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());
+  }
+  function buildHist(){
+    var h='<div class="pf">级别<button class="pbtn'+(HF.lv==="all"?" on":"")+'" data-lv="all">全部</button><button class="pbtn'+(HF.lv==="L1"?" on":"")+'" data-lv="L1">P0</button><button class="pbtn'+(HF.lv==="L2"?" on":"")+'" data-lv="L2">P1</button></div>';
+    var rs=[[24,"24小时"],[72,"3天"],[168,"7天"],[720,"30天"]];
+    h+='<div class="pf">时间';
+    for(var i=0;i<rs.length;i++){h+='<button class="pbtn'+(HF.range===rs[i][0]?" on":"")+'" data-rg="'+rs[i][0]+'">'+rs[i][1]+'</button>';}
+    h+='</div><div id="hlist"></div>';
+    return h;
+  }
+  function renderHist(){
+    var list=document.getElementById("hlist");
+    if(!list){return;}
+    var rows=histRows(),k=low(pq.value.trim()),h="",i,x,cnt=0;
+    for(i=0;i<rows.length;i++){
+      x=rows[i];
+      var dk=(x.variety||"")+" "+(x.code||"")+" "+(x.text||"");
+      if(k&&low(dk).indexOf(k)<0){continue;}
+      cnt++;
+      var dl={bull:"利多",bear:"利空",neutral:"中性"}, dc=x.direction||"neutral";
+      h+='<div class="pitem" data-k="'+esc(dk)+'"><div class="pt"><span class="dirtag '+dc+'">'+(dl[dc]||"中性")+(x.impact?" · "+x.impact:"")+'</span>'+(x.macro_info?'<span class="dirtag macrotag">'+esc(x.macro_info)+'</span>':'')+(x.divergence?'<span class="dirtag divtag">盘面背离</span>':'')+' '+esc(fmtTs(x.ts||0))+' · '+(x.level==="L1"?"P0":"P1")+' · '+esc(x.variety||"")+
+         (x.chg==null?"":" "+(x.chg>0?"+":"")+x.chg.toFixed(2)+"%")+' · '+esc(x.source||"")+'</div><div class="px">'+esc(x.text||"")+'</div></div>';
+    }
+    list.innerHTML=h||'<div class="pempty">没有匹配的告警。</div>';
+    if(cnt){ptitle.textContent="告警历史 · "+cnt+" 条";}
+  }
+  var T={news:"本周期全部快讯",l1:"P0 历史明细",l2:"P1 历史明细",movers:"盘面异动明细",elapsed:"扫描耗时说明"};
+  function openPanel(kind){
+    if(kind==="hist"||kind==="l1"||kind==="l2"){
+      HF.lv=(kind==="l1")?"L1":((kind==="l2")?"L2":"all");
+      ptitle.textContent="告警历史 · 近 30 天";
+      pbody.innerHTML=buildHist();renderHist();
+      pq.value="";pq.style.display="";
+      mask.style.display="block";panel.style.display="flex";
+      return;
+    }
+    ptitle.textContent=(T[kind]||"")+(kind==="news"?" · "+D.news.length+" 条":"");
+    pbody.innerHTML=build(kind);
+    pq.value="";pq.style.display="";
+    mask.style.display="block";
+    panel.style.display="flex";
+    pq.focus();
+  }
+  function closePanel(){mask.style.display="none";panel.style.display="none";}
+  function spark(hist){
+    if(!hist||hist.length<2){return "";}
+    var w=340,h=76,pad=8,v=[],i,keep=[];
+    for(i=0;i<hist.length;i++){if(hist[i][1]>0){keep.push(hist[i]);}}
+    if(keep.length<2){return "";}
+    hist=keep;
+    for(i=0;i<hist.length;i++){v.push(hist[i][1]);}
+    var mn=Math.min.apply(null,v),mx=Math.max.apply(null,v),rg=(mx-mn)||1,pts=[];
+    for(i=0;i<hist.length;i++){
+      var px=pad+i*(w-2*pad)/(hist.length-1);
+      var py=h-pad-(hist[i][1]-mn)/rg*(h-2*pad);
+      pts.push(px.toFixed(1)+","+py.toFixed(1));
+    }
+    var d=pts.join(" ");
+    return '<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" style="width:100%;height:76px;display:block;margin:8px 0 2px">'+
+      '<polyline fill="none" stroke="#3d7dff" stroke-opacity=".22" stroke-width="7" points="'+d+'"/>'+
+      '<polyline fill="none" stroke="#3d7dff" stroke-width="2.2" points="'+d+'"/></svg>'+
+      '<div class="px" style="color:#7d8a9c;font-size:11.5px">近 '+hist.length+' 期区间 '+mn.toLocaleString()+' ~ '+mx.toLocaleString()+'（单位同源数据，非港口/社会库存）</div>';
+  }
+
+  function openVar(code){
+    var q=D.quotes[code]||{}, inv=D.inv[code], f=D.fund[code]||{}, h="", i, rel=[], nm=q.name||"";
+    h+='<div class="pitem" style="border-top:none"><div class="px" style="font-size:13px;color:#8b98aa">'+esc(q.sector||"")+' · '+esc(q.exchange||"")+'</div>'+
+       '<div style="margin-top:4px;font-size:21px;font-weight:700;color:'+(q.chg==null?'#8b98aa':(q.chg>0?'#ff7b72':'#3fb950'))+'">'+
+       (q.chg==null?"无报价":((q.chg>0?"+":"")+q.chg.toFixed(2)+"%"))+
+       (q.price?' <span style="font-size:13px;font-weight:400;color:#8b98aa">最新价 '+esc(q.price)+'</span>':'')+'</div></div>';
+    if(inv){
+      var lastD=inv.hist[inv.hist.length-1][0];
+      h+='<div class="pitem"><div class="pt">库存 · '+(inv.freq||"日")+'频（'+esc(inv.src||"交易所仓单")+' 口径）</div>'+
+         '<div class="px">最新 <b style="font-size:15px">'+inv.last.toLocaleString()+'</b> <span style="color:#8b98aa">'+lastD+'</span>'+
+         '　增减 <b style="color:'+(inv.chg>0?'#ff7b72':(inv.chg<0?'#3fb950':'#8b98aa'))+'">'+(inv.chg>0?"+":"")+inv.chg.toLocaleString()+'</b></div>'+
+         spark(inv.hist)+'</div>';
+    }else{
+      h+='<div class="pitem"><div class="pt">库存</div><div class="px" style="color:#7d8a9c">该品种暂无公开的日频库存口径。</div></div>';
+    }
+    var bs=D.bas[code];
+    if(bs){
+      var br=bs.rate*100, dir=bs.basis>0?"期货升水，现货相对宽松":"现货升水，现货偏紧";
+      var col=Math.abs(br)<1?"#8b98aa":(bs.basis>0?"#3fb950":"#ff7b72");
+      h+='<div class="pitem"><div class="pt">现货与基差 · 日频（'+esc(bs.contract)+' 主力）</div>'+
+         '<div class="px">现货 <b>'+bs.spot.toLocaleString()+'</b>　基差 <b style="color:'+col+'">'+(bs.basis>0?"+":"")+bs.basis.toFixed(2)+'（'+(br>0?"+":"")+br.toFixed(2)+'%）</b></div>'+
+         '<div class="px" style="color:'+col+';margin-top:4px">'+dir+'（基差＝期货－现货，负值越大越偏紧）</div></div>';
+    }
+    h+='<div class="pitem"><div class="pt">供给端看什么</div><div class="px">'+esc(f.supply||"暂无画像")+'</div></div>';
+    h+='<div class="pitem"><div class="pt">需求端看什么</div><div class="px">'+esc(f.demand||"暂无画像")+'</div></div>';
+    h+='<div class="pitem"><div class="pt">库存与信号</div><div class="px">'+esc(f.watch||"—")+'</div></div>';
+    for(i=0;i<D.news.length;i++){
+      var x=D.news[i];
+      if(nm&&((x.variety&&x.variety.indexOf(nm)>=0)||x.text.indexOf(nm)>=0)){rel.push(x);}
+    }
+    h+='<div class="pitem" style="border-bottom:none"><div class="pt">本窗口相关快讯 · '+rel.length+' 条</div>';
+    if(rel.length){
+      for(i=0;i<rel.length&&i<8;i++){
+        h+='<div class="px" style="margin:5px 0">· '+esc(rel[i].time)+' '+esc(rel[i].text)+'</div>';
+      }
+    }else{
+      h+='<div class="px" style="color:#7d8a9c">本窗口没有与该品种直接相关的消息。</div>';
+    }
+    h+='</div>';
+    ptitle.textContent=nm+"（"+code+"）";
+    pbody.innerHTML=h;
+    pq.value="";pq.style.display="none";
+    mask.style.display="block";panel.style.display="flex";
+  }
+
+  document.getElementById("pclose").onclick=closePanel;
+  mask.onclick=closePanel;
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"){closePanel();}});
+
+  var kpis=document.querySelectorAll(".kpi[data-panel]");
+  for(var i=0;i<kpis.length;i++){
+    (function(el){el.onclick=function(){openPanel(el.getAttribute("data-panel"));};})(kpis[i]);
+  }
+  var hm=document.getElementById("hmore");
+  if(hm){hm.onclick=function(e){e.preventDefault();openPanel("hist");};}
+  var vcells=document.querySelectorAll(".cell[data-v]");
+  for(var ci=0;ci<vcells.length;ci++){
+    (function(el){el.onclick=function(){openVar(el.getAttribute("data-v"));};})(vcells[ci]);
+  }
+  pbody.addEventListener("click",function(e){
+    var t=e.target;
+    if(!t||!t.getAttribute){return;}
+    var lv=t.getAttribute("data-lv"),rg=t.getAttribute("data-rg");
+    if(lv){HF.lv=lv;}else if(rg){HF.range=parseInt(rg,10);}else{return;}
+    pbody.innerHTML=buildHist();renderHist();
+  });
+  pq.addEventListener("input",function(){
+    if(document.getElementById("hlist")){renderHist();return;}
+    var k=low(pq.value.trim());
+    var its=pbody.querySelectorAll(".pitem");
+    for(var j=0;j<its.length;j++){
+      its[j].style.display=(!k||low(its[j].getAttribute("data-k")).indexOf(k)>=0)?"":"none";
+    }
+  });
+})();
+</script></div><script>
+(function(){
+var A=[["doubao","b67d3177"],["viewer","6a80eb52"],["guest","18e2ac39"],["admin","fc111c71"]];
+var T="r4d4r-auth-v1";
+function H(s){var x=5381;for(var i=0;i<s.length;i++){x=((x*33)^s.charCodeAt(i))>>>0;}return x.toString(16);}
+var g=document.getElementById("gate"),ap=document.getElementById("app");
+if(document.documentElement.className==="authed"){if(g&&g.parentNode)g.parentNode.removeChild(g);if(ap)ap.style.display="";return;}
+function ok(){try{localStorage.setItem("radar_auth",T)}catch(e){};document.documentElement.className="authed";if(g&&g.parentNode)g.parentNode.removeChild(g);if(ap)ap.style.display="";}
+function go(){var u=(document.getElementById("gu").value||"").trim(),p=document.getElementById("gp").value||"";var hh=H(u+"|"+p);for(var i=0;i<A.length;i++){if(A[i][0]===u&&A[i][1]===hh){ok();return;}}document.getElementById("gerr").textContent="账号或密码不正确";}
+var b=document.getElementById("gb"),pu=document.getElementById("gu"),pp=document.getElementById("gp");
+b.onclick=go;
+pp.onkeydown=function(e){if(e.key==="Enter"){go();}};
+pu.onkeydown=function(e){if(e.key==="Enter"){pp.focus();}};
+})();
+</script></body></html>
